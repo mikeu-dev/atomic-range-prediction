@@ -1,8 +1,12 @@
 <script lang="ts">
-    import MapChart from "$lib/components/MapChart.svelte";
     import BombSelector from "$lib/components/BombSelector.svelte";
+    import MapChart from "$lib/components/MapChart.svelte";
     import BlastInfo from "$lib/components/BlastInfo.svelte";
     import BlastHistory from "$lib/components/BlastHistory.svelte";
+    import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
+    import LocationSearch from "$lib/components/LocationSearch.svelte";
+
+    let mapChartRef: any;
 </script>
 
 <main class="container">
@@ -21,18 +25,28 @@
 
     <div class="controls-section glass">
         <BombSelector />
+        <LocationSearch
+            on:select={(e) => {
+                // Pan map to selected location if mapChartRef is available
+                if (mapChartRef && mapChartRef.panToLocation) {
+                    mapChartRef.panToLocation(e.detail.lat, e.detail.lon);
+                }
+            }}
+        />
         <div class="instructions">
             <h3>📍 Cara Menggunakan:</h3>
             <ol>
                 <li>Pilih jenis bom dari dropdown di atas</li>
-                <li>Klik pada negara di peta untuk melihat simulasi</li>
+                <li>
+                    Cari lokasi dengan search box atau klik langsung pada peta
+                </li>
                 <li>Lihat animasi dan data prediksi dampak</li>
             </ol>
         </div>
     </div>
 
     <div class="map-section">
-        <MapChart />
+        <MapChart bind:this={mapChartRef} />
     </div>
 
     <div class="info-grid">

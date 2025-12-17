@@ -15,6 +15,7 @@
     import {
         generateRandomWind,
         calculateFalloutPattern,
+        generateFalloutPolygon,
     } from "$lib/utils/windEffects";
     import {
         BLAST_ZONE_COLORS,
@@ -22,6 +23,11 @@
         ANIMATION,
     } from "$lib/utils/constants";
     import type { BlastEvent } from "$lib/types";
+    import {
+        isValidCoordinates,
+        validateCountryName,
+        ValidationError,
+    } from "$lib/utils/validation";
 
     export let mapId = "chartdiv";
 
@@ -38,11 +44,17 @@
     let thermalSeries: any;
     let falloutSeries: any;
 
+    let isLoading = true;
+    let isCalculating = false;
+
+    let am5Core: any = null; // Store am5 reference for use in exported functions
+
     onMount(async () => {
         if (!browser) return;
 
         // Dynamic import untuk avoid SSR issues
         const am5 = await import("@amcharts/amcharts5");
+        am5Core = am5; // Store for use in exported functions
         const am5map = await import("@amcharts/amcharts5/map");
         const { default: am5geodata_worldLow } = await import(
             "@amcharts/amcharts5-geodata/worldLow"
@@ -430,6 +442,31 @@
 
                 const centroid = [longitude, latitude];
 
+                // Validate coordinates
+                if (!isValidCoordinates(latitude, longitude)) {
+                    console.error("Invalid coordinates:", {
+                        latitude,
+                        longitude,
+                    });
+                    alert("Koordinat tidak valid. Silakan pilih lokasi lain.");
+                    return;
+                }
+
+                // Validate and sanitize country name
+                const countryValidation = validateCountryName(countryName);
+                if (!countryValidation.valid) {
+                    console.error(
+                        "Invalid country name:",
+                        countryValidation.error,
+                    );
+                    alert(countryValidation.error);
+                    return;
+                }
+                const sanitizedCountryName = countryValidation.value;
+
+                // Show calculating state
+                isCalculating = true;
+
                 const blastData = calculateBlastRadius($selectedBomb.yieldKt);
                 const population = estimatePopulationAffected(
                     blastData.thermal,
@@ -486,13 +523,23 @@
                     geometry: pointGeometry,
                 });
 
-                // Add fallout pattern (simplified ellipse)
-                // TODO: Implement proper ellipse generation
-                // For now, skip fallout visualization to avoid complexity
+                // Add fallout pattern visualization
+                const falloutPoints = generateFalloutPolygon(falloutPattern);
+
+                // Create polygon geometry for fallout
+                const falloutGeometry = {
+                    type: "Polygon",
+                    coordinates: [falloutPoints],
+                };
+
+                falloutSeries.data.push({
+                    geometry: falloutGeometry,
+                    tooltipText: `Fallout Zone\nIntensitas: ${Math.round(falloutPattern.intensity * 100)}%\nArah Angin: ${wind.direction}°\nKecepatan: ${wind.speed} km/jam`,
+                });
 
                 // Update current blast data
                 currentBlastData.set({
-                    countryName,
+                    countryName: sanitizedCountryName,
                     blastData,
                     population,
                     infrastructure,
@@ -501,7 +548,7 @@
                 // Add to history
                 const blastEvent: BlastEvent = {
                     id: generateId(),
-                    countryName,
+                    countryName: sanitizedCountryName,
                     bombType: $selectedBomb,
                     blastData,
                     timestamp: Date.now(),
@@ -509,6 +556,9 @@
                 };
 
                 addBlastToHistory(blastEvent);
+
+                // Hide calculating state
+                isCalculating = false;
             },
         );
         // Add zoom control
@@ -517,7 +567,46 @@
             am5map.ZoomControl.new(root, {}),
         );
         zoomControl.homeButton.set("visible", true);
+
+        // Map loaded, hide loading screen
+        isLoading = false;
     });
+
+    /**
+     * Pan and zoom map to specific location
+     * Exported function that can be called from parent component
+     */
+    export function panToLocation(
+        lat: number,
+        lon: number,
+        zoomLevel: number = 6,
+    ) {
+        if (!chart || !am5Core) return;
+
+        chart.animate({
+            key: "rotationX",
+            to: 0,
+            duration: 1000,
+            easing: am5Core.ease.out(am5Core.ease.cubic),
+        });
+
+        chart.animate({
+            key: "rotationY",
+            to: 0,
+            duration: 1000,
+            easing: am5Core.ease.out(am5Core.ease.cubic),
+        });
+
+        // Zoom to location
+        chart.goHome(0);
+        setTimeout(() => {
+            chart.zoomToGeoPoint(
+                { latitude: lat, longitude: lon },
+                zoomLevel,
+                true,
+            );
+        }, 100);
+    }
 
     onDestroy(() => {
         if (root) {
@@ -526,9 +615,30 @@
     });
 </script>
 
-<div id={mapId} class="map-container"></div>
+<div class="map-wrapper">
+    {#if isLoading}
+        <div class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Memuat peta dunia...</p>
+        </div>
+    {/if}
+
+    {#if isCalculating}
+        <div class="calculating-indicator">
+            <div class="calculating-spinner"></div>
+            <span>Menghitung dampak ledakan...</span>
+        </div>
+    {/if}
+
+    <div id={mapId} class="map-container"></div>
+</div>
 
 <style>
+    .map-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
     .map-container {
         width: 100%;
         height: 600px;
@@ -536,6 +646,86 @@
         overflow: hidden;
         box-shadow: var(--shadow-lg);
         background: var(--color-bg-secondary);
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--color-bg-primary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-md);
+        z-index: 100;
+        border-radius: var(--radius-lg);
+    }
+
+    .loading-overlay p {
+        font-size: var(--font-size-lg);
+        color: var(--color-text-secondary);
+        margin: 0;
+    }
+
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Calculating Indicator */
+    .calculating-indicator {
+        position: absolute;
+        top: var(--space-md);
+        right: var(--space-md);
+        background: var(--color-bg-secondary);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        z-index: 50;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .calculating-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    .calculating-indicator span {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+        font-weight: 500;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @media (max-width: 768px) {

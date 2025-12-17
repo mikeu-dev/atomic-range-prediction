@@ -1,4 +1,5 @@
 import type { BlastData } from '$lib/types';
+import { isValidYield } from './validation';
 
 /**
  * Calculate blast radius based on nuclear yield
@@ -13,6 +14,11 @@ import type { BlastData } from '$lib/types';
  * @returns Object containing all blast zone radii in kilometers
  */
 export function calculateBlastRadius(yieldKt: number): BlastData {
+    // Validate yield
+    if (!isValidYield(yieldKt)) {
+        throw new Error(`Invalid yield: ${yieldKt}kt. Must be between 0 and 100,000kt.`);
+    }
+
     // Scaling factor berdasarkan cube root untuk blast effects
     // Sebagian besar efek ledakan skala dengan Y^(1/3)
     const cubeRoot = Math.pow(yieldKt, 1 / 3);
@@ -52,6 +58,11 @@ export function calculateBlastRadius(yieldKt: number): BlastData {
  * Menggunakan area circle dan population density
  */
 export function estimatePopulationAffected(thermalRadius: number): number {
+    // Validate radius
+    if (isNaN(thermalRadius) || thermalRadius < 0) {
+        throw new Error(`Invalid radius: ${thermalRadius}`);
+    }
+
     // Simplified calculation based on average population density
     const avgDensityPerKm2 = 50; // Very rough global average
     const area = Math.PI * Math.pow(thermalRadius, 2);
