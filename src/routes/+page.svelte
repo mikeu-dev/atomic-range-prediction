@@ -1,0 +1,206 @@
+<script lang="ts">
+    import MapChart from "$lib/components/MapChart.svelte";
+    import BombSelector from "$lib/components/BombSelector.svelte";
+    import BlastInfo from "$lib/components/BlastInfo.svelte";
+    import BlastHistory from "$lib/components/BlastHistory.svelte";
+</script>
+
+<main class="container">
+    <header class="header fade-in">
+        <div class="title-section">
+            <h1 class="title">
+                <span class="icon">☢️</span>
+                Atomic Range Prediction
+            </h1>
+            <p class="subtitle">
+                Simulasi Interaktif Prediksi Luas Sebaran Bom Atom dengan Peta
+                Global
+            </p>
+        </div>
+    </header>
+
+    <div class="controls-section glass">
+        <BombSelector />
+        <div class="instructions">
+            <h3>📍 Cara Menggunakan:</h3>
+            <ol>
+                <li>Pilih jenis bom dari dropdown di atas</li>
+                <li>Klik pada negara di peta untuk melihat simulasi</li>
+                <li>Lihat animasi dan data prediksi dampak</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="map-section">
+        <MapChart />
+    </div>
+
+    <div class="info-grid">
+        <BlastInfo />
+        <BlastHistory />
+    </div>
+
+    <footer class="footer">
+        <p>
+            💡 <strong>Atomic Range Prediction</strong> - Eksplorasi dampak bom atom
+            dengan peta interaktif dan animasi modern!
+        </p>
+        <p class="disclaimer">
+            ⚠️ Data simulasi ini hanya untuk tujuan edukasi. Formula yang
+            digunakan adalah pendekatan sederhana dan bukan perhitungan militer
+            yang sebenarnya.
+        </p>
+    </footer>
+</main>
+
+<style>
+    .container {
+        min-height: 100vh;
+        padding: var(--space-2xl) var(--space-lg);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: var(--space-2xl);
+    }
+
+    .title-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-md);
+        font-size: var(--font-size-3xl);
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .title .icon {
+        font-size: 3rem;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .subtitle {
+        font-size: var(--font-size-lg);
+        color: var(--color-text-secondary);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .controls-section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+        padding: var(--space-xl);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-xl);
+        animation: fadeIn 0.5s ease-out 0.2s both;
+    }
+
+    .instructions {
+        padding: var(--space-md) var(--space-lg);
+        background: var(--color-bg-tertiary);
+        border-left: 4px solid var(--color-primary);
+        border-radius: var(--radius-md);
+    }
+
+    .instructions h3 {
+        margin: 0 0 var(--space-md) 0;
+        font-size: var(--font-size-lg);
+        color: var(--color-text-primary);
+    }
+
+    .instructions ol {
+        margin: 0;
+        padding-left: var(--space-lg);
+        line-height: 1.8;
+        color: var(--color-text-secondary);
+    }
+
+    .instructions li {
+        margin-bottom: var(--space-xs);
+    }
+
+    .map-section {
+        margin-bottom: var(--space-2xl);
+        animation: fadeIn 0.5s ease-out 0.4s both;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--space-xl);
+        margin-bottom: var(--space-2xl);
+        animation: fadeIn 0.5s ease-out 0.6s both;
+    }
+
+    .footer {
+        text-align: center;
+        padding: var(--space-xl) 0;
+        border-top: 1px solid var(--color-border);
+        margin-top: var(--space-2xl);
+    }
+
+    .footer p {
+        margin: var(--space-sm) 0;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+        line-height: 1.6;
+    }
+
+    .footer strong {
+        color: var(--color-primary);
+    }
+
+    .disclaimer {
+        max-width: 600px;
+        margin: var(--space-md) auto 0;
+        padding: var(--space-md);
+        background: hsla(40, 90%, 55%, 0.1);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-xs);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container {
+            padding: var(--space-xl) var(--space-md);
+        }
+
+        .title {
+            font-size: var(--font-size-2xl);
+            flex-direction: column;
+        }
+
+        .subtitle {
+            font-size: var(--font-size-base);
+        }
+
+        .controls-section {
+            padding: var(--space-lg);
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .title {
+            font-size: var(--font-size-xl);
+        }
+
+        .title .icon {
+            font-size: 2rem;
+        }
+    }
+</style>
