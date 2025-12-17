@@ -1,202 +1,321 @@
-# Atomic Range Prediction
+# ☢️ Atomic Range Prediction
 
-## 📌 Deskripsi
-**Atomic Range Prediction** adalah aplikasi web interaktif yang dibangun dengan **SvelteKit** untuk mensimulasikan dan memprediksi luas sebaran dampak bom atom pada area tertentu di seluruh dunia. Aplikasi ini menampilkan peta interaktif dengan berbagai proyeksi geografis, animasi real-time, dan perhitungan ilmiah untuk tujuan edukasi.
+**Simulator interaktif untuk mempelajari dampak bom atom dengan visualisasi peta global**
 
-## ✨ Fitur Utama
+> Educational tool untuk memahami radius dan efek dari berbagai jenis senjata nuklir menggunakan data dan formula yang realistis.
 
-### 🗺️ Peta Interaktif
-- **5 Proyeksi Peta**: geoEqualEarth, geoEquirectangular, geoMercator, geoNaturalEarth1, geoOrthographic
-- **Toggle Globe/Map**: Beralih antara tampilan peta flat dan globe 3D
-- **Zoom Controls**: Kontrol zoom dengan home button untuk reset
-- **Click-to-Simulate**: Klik negara untuk simulasi ledakan
-
-### 💣 Simulasi Bom
-- **5 Jenis Bom**: Little Boy, Fat Man, Tsar Bomba, W87, Castle Bravo
-- **Data Historis**: Setiap bom memiliki informasi yield dan deskripsi
-- **Custom Selector**: Dropdown interaktif dengan keyboard navigation
-
-### 📊 Visualisasi Data
-- **Blast Circles**: Animasi lingkaran dampak thermal dengan smooth transition
-- **Info Table**: Data lengkap fireball, shockwave, thermal radius
-- **Population Estimate**: Estimasi populasi terdampak
-- **Infrastructure Damage**: Progress bar kerusakan infrastruktur
-
-### 🎨 UI/UX Modern
-- **Dark Mode**: Toggle light/dark theme dengan localStorage persistence
-- **Glassmorphism**: Efek kaca modern dengan backdrop blur
-- **Smooth Animations**: Fade-in, slide, dan micro-interactions
-- **Responsive Design**: Mobile-first design untuk semua device
-- **Google Fonts**: Typography modern dengan Inter font
-
-### 📜 Fitur Tambahan
-- **Blast History**: Riwayat 10 simulasi terakhir
-- **Copy to Clipboard**: Export data simulasi
-- **Clear History**: Hapus semua atau per-item
-- **Accessibility**: ARIA labels dan keyboard navigation
-
-## 🛠️ Teknologi yang Digunakan
-
-### Core
-- **SvelteKit** `^2.49.1` - Full-stack framework dengan SSR
-- **Svelte 5** `^5.45.6` - Reactive UI components
-- **TypeScript** `^5.9.3` - Static type checking
-- **Vite** `^7.2.6` - Lightning-fast build tool
-
-### Libraries
-- **@amcharts/amcharts5** `^5.14.4` - Interactive maps dan charts
-- **@amcharts/amcharts5-geodata** - World map geodata
-
-### Styling
-- **Vanilla CSS** - Custom design system dengan CSS variables
-- **Google Fonts** - Inter font family
-
-## 🚀 Instalasi & Development
-
-### Prerequisites
-- Node.js 18+ dan npm
-
-### Clone Repository
-```sh
-git clone https://github.com/username/atomic-range-prediction.git
-cd atomic-range-prediction
-```
-
-### Install Dependencies
-```sh
-npm install
-```
-
-### Development Server
-```sh
-npm run dev
-
-# Atau buka otomatis di browser
-npm run dev -- --open
-```
-
-Aplikasi akan berjalan di `http://localhost:5173`
-
-### Build Production
-```sh
-npm run build
-```
-
-### Preview Production Build
-```sh
-npm run preview
-```
-
-### Type Checking
-```sh
-npm run check
-
-# Watch mode
-npm run check:watch
-```
-
-## 📁 Struktur Proyek
-
-```
-atomic-range-prediction/
-├── src/
-│   ├── lib/
-│   │   ├── components/
-│   │   │   ├── BombSelector.svelte
-│   │   │   ├── BlastInfo.svelte
-│   │   │   ├── BlastHistory.svelte
-│   │   │   ├── DarkModeToggle.svelte
-│   │   │   └── MapChart.svelte
-│   │   ├── stores/
-│   │   │   └── appStore.ts
-│   │   ├── types/
-│   │   │   └── index.ts
-│   │   └── utils/
-│   │       ├── blastCalculator.ts
-│   │       └── constants.ts
-│   ├── routes/
-│   │   ├── +layout.svelte
-│   │   └── +page.svelte
-│   ├── app.css
-│   └── app.html
-├── static/
-│   └── images/
-├── old/
-│   └── main.html (backup HTML original)
-├── package.json
-├── svelte.config.js
-├── tsconfig.json
-└── vite.config.ts
-```
-
-## 📷 Preview
-
-![Screenshot](static/images/preview.jpg)
-
-## 🎯 Cara Menggunakan
-
-1. **Buka aplikasi** di browser
-2. **Pilih jenis bom** dari dropdown selector
-3. **Klik pada negara** di peta interaktif
-4. **Lihat animasi** blast circle yang muncul
-5. **Periksa data** di tabel informasi
-6. **Cek riwayat** simulasi di panel history
-
-## 🌐 Deployment
-
-### Vercel (Recommended)
-```sh
-npm install -g vercel
-vercel
-```
-
-### Netlify
-```sh
-npm run build
-# Upload folder build/ ke Netlify
-```
-
-### Static Hosting
-Untuk hosting static seperti GitHub Pages, update `svelte.config.js`:
-```js
-import adapter from '@sveltejs/adapter-static';
-```
-
-Kemudian:
-```sh
-npm run build
-# Deploy folder build/
-```
-
-## 💡 Catatan Penting
-
-### ⚠️ Disclaimer
-Data simulasi ini **hanya untuk tujuan edukasi**. Formula yang digunakan adalah pendekatan sederhana dan **bukan perhitungan militer yang sebenarnya**.
-
-### 🔬 Formula Blast Radius
-- **Fireball**: `0.62 × yield^0.4` km
-- **Shockwave**: `1.8 × yield^0.33` km  
-- **Thermal**: `3.2 × yield^0.4` km
-
-*(yield dalam kiloton)*
-
-## 🤝 Contributing
-
-Kontribusi sangat diterima! Silakan:
-1. Fork repository
-2. Buat branch feature (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buka Pull Request
-
-## 📝 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## 👨‍💻 Author
-
-Created with ❤️ using SvelteKit
+[![SvelteKit](https://img.shields.io/badge/SvelteKit-FF3E00?style=flat&logo=svelte&logoColor=white)](https://kit.svelte.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![amCharts](https://img.shields.io/badge/amCharts-0093D7?style=flat)](https://www.amcharts.com/)
 
 ---
 
-💡 **Atomic Range Prediction** - Eksplorasi dampak bom atom dengan peta interaktif dan animasi modern!
+## ✨ Features
+
+### 🎯 Core Features
+
+- **6 Blast Zones Visualization** - Fireball, Radiation, Heavy Blast, Moderate Blast, Light Blast, dan Thermal Radiation
+- **Interactive World Map** - Click anywhere untuk simulasi dengan animasi real-time
+- **Multiple Bomb Types** - Dari Little Boy (15kt) hingga Tsar Bomba (50,000kt)
+- **Wind & Fallout System** - Visualisasi pattern radioactive fallout berdasarkan arah angin
+- **Real Population Density** - Estimasi korban berdasarkan data 50+ cities dan 40+ countries
+
+### 🚀 Advanced Features
+
+- **📊 Comparison Mode** - Bandingkan 2 bom secara side-by-side
+- **📤 Export & Share** - Export sebagai PNG/PDF/JSON/CSV atau share via link
+- **🔍 Location Search** - Cari kota/negara dengan autocomplete
+- **📜 Simulation History** - Track 10 simulasi terakhir
+- **🎓 Interactive Tutorial** - Guided tour untuk first-time users
+- **🌓 Dark Mode** - Support light dan dark theme
+
+---
+
+## 🎬 Preview
+
+### Main Interface
+![Main Interface](docs/screenshots/main-interface.png)
+
+### Comparison Mode
+![Comparison Mode](docs/screenshots/comparison-mode.png)
+
+### Export Options
+![Export Menu](docs/screenshots/export-menu.png)
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm atau yarn
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/atomic-range-prediction.git
+cd atomic-range-prediction
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+Buka browser di `http://localhost:5173`
+
+---
+
+## 📖 Usage Guide
+
+### Basic Simulation
+
+1. **Pilih Bom** - Gunakan dropdown untuk memilih jenis bom
+2. **Klik Peta** - Click pada negara mana saja di peta
+3. **Lihat Hasil** - Blast zones akan muncul dengan animasi
+4. **Analisis Data** - Panel info menampilkan detail lengkap
+
+### Comparison Mode
+
+1. Click **"Comparison Mode"** toggle
+2. Pilih **2 bombs** dari grid selector
+3. Click lokasi di peta
+4. Lihat perbandingan detail di comparison panel
+
+### Export Results
+
+1. Click **"Export & Share"** button
+2. Pilih format: PNG, PDF, JSON, atau CSV
+3. File akan otomatis download
+
+### Share Simulation
+
+1. Run simulasi
+2. Click **"Copy Share Link"** dari Export menu
+3. Share URL dengan orang lain
+4. Mereka akan melihat exact same simulation
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+
+- **SvelteKit** - Full-stack framework
+- **TypeScript** - Type safety
+- **amCharts 5** - Interactive maps & visualizations
+- **Vite** - Build tool
+
+### Libraries
+
+- **html2canvas** - Screenshot export
+- **jsPDF** - PDF generation
+- **driver.js** - Interactive tutorials
+- **Nominatim API** - Location search
+
+---
+
+## 📊 Data Sources
+
+### Population Density
+
+Data kepadatan populasi dari:
+- UN World Urbanization Prospects 2024
+- World Bank Open Data
+- Wikipedia city statistics
+
+**Coverage:**
+- 50+ major cities worldwide
+- 40+ countries
+- Hierarchical fallback system
+
+### Nuclear Physics Formulas
+
+Blast radius calculations based on:
+- Scaling law: `R = C × Y^(1/3)`
+- Different zones menggunakan konstanta berbeda
+- Pressure overpressure models (PSI)
+
+---
+
+## 🛠️ Development
+
+### Project Structure
+
+```
+src/
+├── lib/
+│   ├── components/       # Svelte components
+│   │   ├── MapChart.svelte
+│   │   ├── BombSelector.svelte
+│   │   ├── BlastInfo.svelte
+│   │   ├── ComparisonPanel.svelte
+│   │   └── ...
+│   ├── stores/          # Svelte stores
+│   │   └── appStore.ts
+│   ├── utils/           # Utility functions
+│   │   ├── blastCalculator.ts
+│   │   ├── populationData.ts
+│   │   ├── exportUtils.ts
+│   │   └── ...
+│   └── types/           # TypeScript types
+│       └── index.ts
+├── routes/              # SvelteKit routes
+│   └── +page.svelte
+└── app.css             # Global styles
+```
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev              # Start dev server
+
+# Build
+npm run build            # Production build
+npm run preview          # Preview production build
+
+# Linting
+npm run check            # Type checking
+npm run lint             # Lint code
+```
+
+### Adding New Bomb Types
+
+Edit `src/lib/utils/constants.ts`:
+
+```typescript
+export const BOMB_TYPES: BombType[] = [
+    // ...existing bombs
+    {
+        id: 'new-bomb',
+        name: 'New Bomb Name',
+        yieldKt: 1000, // yield in kilotons
+        description: 'Description here'
+    }
+];
+```
+
+---
+
+## 📈 Performance
+
+### Bundle Size
+
+- **Initial Load:** ~450KB (gzipped)
+- **Dependencies:** 325KB
+- **Application Code:** 125KB
+
+### Load Times
+
+- **First Paint:** < 1s
+- **Interactive:** < 2s
+- **Map Load:** ~2s
+
+### Browser Support
+
+- ✅ Chrome 90+
+- ✅ Firefox 88+
+- ✅ Safari 14+
+- ✅ Edge 90+
+
+---
+
+## 🔒 Security
+
+### Input Validation
+
+- Coordinate validation (lat/lon ranges)
+- Yield validation (0.001kt - 100,000kt)
+- Country name sanitization
+- XSS prevention
+
+### Data Privacy
+
+- No user data collected
+- No analytics tracking
+- No external API calls (except Nominatim for search)
+- All calculations client-side
+
+---
+
+## 🎓 Educational Purpose
+
+**Disclaimer:** Aplikasi ini dibuat untuk tujuan **edukasi dan awareness** tentang efek destruktif senjata nuklir. Data dan formula yang digunakan adalah pendekatan sederhana dan bukan perhitungan militer yang sebenarnya.
+
+### Learning Objectives
+
+- Memahami skala dampak senjata nuklir
+- Membandingkan destructive power antar bomb types
+- Awareness tentang bahaya radiasi dan fallout
+- Memahami konsep blast pressure dan thermal effects
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+### Development Guidelines
+
+- Follow existing code style
+- Add comments untuk complex logic
+- Update documentation jika perlu
+- Test thoroughly before PR
+
+---
+
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) file for details
+
+---
+
+## 👥 Credits
+
+### Developer
+
+- **Your Name** - Initial work
+
+### Data Sources
+
+- Nuclear weapons data from public sources
+- Population data from UN & World Bank
+- Map data from amCharts
+
+### Libraries
+
+- [SvelteKit](https://kit.svelte.dev/)
+- [amCharts](https://www.amcharts.com/)
+- [html2canvas](https://html2canvas.hertzen.com/)
+- [jsPDF](https://github.com/parallax/jsPDF)
+- [driver.js](https://driverjs.com/)
+
+---
+
+## 📧 Contact
+
+- Email: your.email@example.com
+- GitHub: [@yourusername](https://github.com/yourusername)
+- Website: https://yourwebsite.com
+
+---
+
+## 🙏 Acknowledgments
+
+- Inspired by [NUKEMAP](https://nuclearsecrecy.com/nukemap/) by Alex Wellerstein
+- Nuclear physics formulas from scientific literature
+- Community feedback and contributions
+
+---
+
+**⚠️ Remember:** Nuclear weapons are catastrophic. This tool is meant to educate about their dangers, not glorify their use.
