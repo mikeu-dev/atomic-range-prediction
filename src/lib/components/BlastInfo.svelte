@@ -1,6 +1,14 @@
 <script lang="ts">
     import { currentBlastData } from "$lib/stores/appStore";
-    import { formatNumber } from "$lib/utils/blastCalculator";
+    import {
+        formatNumber,
+        calculateOverpressure,
+        estimateCasualtiesByZone,
+    } from "$lib/utils/blastCalculator";
+    import {
+        BLAST_ZONE_COLORS,
+        BLAST_ZONE_OPACITY,
+    } from "$lib/utils/constants";
 
     let copySuccess = false;
 
@@ -11,9 +19,12 @@
 Atomic Range Prediction - Data Simulasi
 
 Wilayah: ${$currentBlastData.countryName}
-Dampak Fireball: ${$currentBlastData.blastData.fireball} km
-Dampak Shockwave: ${$currentBlastData.blastData.shockwave} km
-Dampak Thermal: ${$currentBlastData.blastData.thermal} km
+Zona Fireball: ${$currentBlastData.blastData.fireball} km
+Zona Radiasi: ${$currentBlastData.blastData.radiation} km
+Heavy Blast (20 psi): ${$currentBlastData.blastData.heavyBlast} km
+Moderate Blast (5 psi): ${$currentBlastData.blastData.moderateBlast} km
+Light Blast (1 psi): ${$currentBlastData.blastData.lightBlast} km
+Zona Thermal: ${$currentBlastData.blastData.thermal} km
 Populasi Terdampak: ${formatNumber($currentBlastData.population)} orang
 Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
 		`.trim();
@@ -70,78 +81,278 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
             </button>
         </div>
 
-        <table class="info-table">
-            <tbody>
-                <tr>
-                    <th>Wilayah</th>
-                    <td class="highlight">{$currentBlastData.countryName}</td>
-                </tr>
-                <tr class="danger-row">
-                    <th>
-                        <span class="icon">🔥</span>
-                        Dampak Fireball
-                    </th>
-                    <td
-                        ><strong
-                            >{$currentBlastData.blastData.fireball} km</strong
-                        ></td
+        <!-- Wilayah Info -->
+        <div class="country-info">
+            <h3>Wilayah Target</h3>
+            <p class="country-name">{$currentBlastData.countryName}</p>
+        </div>
+
+        <!-- Mini Visualisasi Blast Zones -->
+        <div class="blast-zones-visual">
+            <h3>Zona Ledakan</h3>
+            <div class="zones-container">
+                <div
+                    class="zone-circle thermal"
+                    style="width: 100%; height: 100%; background: {BLAST_ZONE_COLORS.thermal}; opacity: {BLAST_ZONE_OPACITY.thermal};"
+                ></div>
+                <div
+                    class="zone-circle light"
+                    style="width: 85%; height: 85%; background: {BLAST_ZONE_COLORS.lightBlast}; opacity: {BLAST_ZONE_OPACITY.lightBlast};"
+                ></div>
+                <div
+                    class="zone-circle moderate"
+                    style="width: 65%; height: 65%; background: {BLAST_ZONE_COLORS.moderateBlast}; opacity: {BLAST_ZONE_OPACITY.moderateBlast};"
+                ></div>
+                <div
+                    class="zone-circle heavy"
+                    style="width: 45%; height: 45%; background: {BLAST_ZONE_COLORS.heavyBlast}; opacity: {BLAST_ZONE_OPACITY.heavyBlast};"
+                ></div>
+                <div
+                    class="zone-circle radiation"
+                    style="width: 25%; height: 25%; background: {BLAST_ZONE_COLORS.radiation}; opacity: {BLAST_ZONE_OPACITY.radiation};"
+                ></div>
+                <div
+                    class="zone-circle fireball"
+                    style="width: 10%; height: 10%; background: {BLAST_ZONE_COLORS.fireball}; opacity: {BLAST_ZONE_OPACITY.fireball};"
+                ></div>
+            </div>
+        </div>
+
+        <!-- Detail Zona -->
+        <div class="zones-detail">
+            <h3>Detail Zona Dampak</h3>
+
+            <div
+                class="zone-item"
+                style="border-left-color: {BLAST_ZONE_COLORS.fireball}"
+            >
+                <div class="zone-header">
+                    <span class="icon">🔥</span>
+                    <span class="zone-name">Fireball</span>
+                    <span class="zone-radius"
+                        >{$currentBlastData.blastData.fireball} km</span
                     >
-                </tr>
-                <tr class="warning-row">
-                    <th>
-                        <span class="icon">💥</span>
-                        Dampak Shockwave
-                    </th>
-                    <td
-                        ><strong
-                            >{$currentBlastData.blastData.shockwave} km</strong
-                        ></td
+                </div>
+                <div class="zone-stats">
+                    <div class="stat">
+                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-value"
+                            >{calculateOverpressure("fireball")} psi</span
+                        >
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Korban:</span>
+                        <span class="stat-value"
+                            >{formatNumber(
+                                estimateCasualtiesByZone(
+                                    $currentBlastData.blastData.fireball,
+                                    "fireball",
+                                ),
+                            )}</span
+                        >
+                    </div>
+                </div>
+                <p class="zone-desc">
+                    Zona inti dengan suhu jutaan derajat - vaporisasi total
+                </p>
+            </div>
+
+            <div
+                class="zone-item"
+                style="border-left-color: {BLAST_ZONE_COLORS.radiation}"
+            >
+                <div class="zone-header">
+                    <span class="icon">☢️</span>
+                    <span class="zone-name">Radiasi Fatal</span>
+                    <span class="zone-radius"
+                        >{$currentBlastData.blastData.radiation} km</span
                     >
-                </tr>
-                <tr class="danger-row">
-                    <th>
-                        <span class="icon">☢️</span>
-                        Dampak Thermal
-                    </th>
-                    <td
-                        ><strong
-                            >{$currentBlastData.blastData.thermal} km</strong
-                        ></td
+                </div>
+                <div class="zone-stats">
+                    <div class="stat">
+                        <span class="stat-label">Dosis:</span>
+                        <span class="stat-value">500+ rem</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Korban:</span>
+                        <span class="stat-value"
+                            >{formatNumber(
+                                estimateCasualtiesByZone(
+                                    $currentBlastData.blastData.radiation,
+                                    "radiation",
+                                ),
+                            )}</span
+                        >
+                    </div>
+                </div>
+                <p class="zone-desc">
+                    Radiasi langsung mematikan dalam hitungan jam
+                </p>
+            </div>
+
+            <div
+                class="zone-item"
+                style="border-left-color: {BLAST_ZONE_COLORS.heavyBlast}"
+            >
+                <div class="zone-header">
+                    <span class="icon">💥</span>
+                    <span class="zone-name">Heavy Blast</span>
+                    <span class="zone-radius"
+                        >{$currentBlastData.blastData.heavyBlast} km</span
                     >
-                </tr>
-                <tr>
-                    <th>
-                        <span class="icon">👥</span>
-                        Populasi Terdampak
-                    </th>
-                    <td>{formatNumber($currentBlastData.population)} orang</td>
-                </tr>
-                <tr>
-                    <th>
-                        <span class="icon">🏗️</span>
-                        Kerusakan Infrastruktur
-                    </th>
-                    <td>
-                        <div class="progress-bar">
-                            <div
-                                class="progress-fill"
-                                style="width: {$currentBlastData.infrastructure}%"
-                            ></div>
-                            <span class="progress-text"
-                                >{$currentBlastData.infrastructure}%</span
-                            >
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                </div>
+                <div class="zone-stats">
+                    <div class="stat">
+                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-value">20 psi</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Korban:</span>
+                        <span class="stat-value"
+                            >{formatNumber(
+                                estimateCasualtiesByZone(
+                                    $currentBlastData.blastData.heavyBlast,
+                                    "heavyBlast",
+                                ),
+                            )}</span
+                        >
+                    </div>
+                </div>
+                <p class="zone-desc">Kehancuran total bangunan bertingkat</p>
+            </div>
+
+            <div
+                class="zone-item"
+                style="border-left-color: {BLAST_ZONE_COLORS.moderateBlast}"
+            >
+                <div class="zone-header">
+                    <span class="icon">🏚️</span>
+                    <span class="zone-name">Moderate Blast</span>
+                    <span class="zone-radius"
+                        >{$currentBlastData.blastData.moderateBlast} km</span
+                    >
+                </div>
+                <div class="zone-stats">
+                    <div class="stat">
+                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-value">5 psi</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Korban:</span>
+                        <span class="stat-value"
+                            >{formatNumber(
+                                estimateCasualtiesByZone(
+                                    $currentBlastData.blastData.moderateBlast,
+                                    "moderateBlast",
+                                ),
+                            )}</span
+                        >
+                    </div>
+                </div>
+                <p class="zone-desc">
+                    Kerusakan parah pada bangunan residensial
+                </p>
+            </div>
+
+            <div
+                class="zone-item"
+                style="border-left-color: {BLAST_ZONE_COLORS.lightBlast}"
+            >
+                <div class="zone-header">
+                    <span class="icon">🏢</span>
+                    <span class="zone-name">Light Blast</span>
+                    <span class="zone-radius"
+                        >{$currentBlastData.blastData.lightBlast} km</span
+                    >
+                </div>
+                <div class="zone-stats">
+                    <div class="stat">
+                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-value">1 psi</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Korban:</span>
+                        <span class="stat-value"
+                            >{formatNumber(
+                                estimateCasualtiesByZone(
+                                    $currentBlastData.blastData.lightBlast,
+                                    "lightBlast",
+                                ),
+                            )}</span
+                        >
+                    </div>
+                </div>
+                <p class="zone-desc">
+                    Jendela pecah, kerusakan struktural ringan
+                </p>
+            </div>
+
+            <div
+                class="zone-item"
+                style="border-left-color: {BLAST_ZONE_COLORS.thermal}"
+            >
+                <div class="zone-header">
+                    <span class="icon">🌡️</span>
+                    <span class="zone-name">Thermal Radiation</span>
+                    <span class="zone-radius"
+                        >{$currentBlastData.blastData.thermal} km</span
+                    >
+                </div>
+                <div class="zone-stats">
+                    <div class="stat">
+                        <span class="stat-label">Intensitas:</span>
+                        <span class="stat-value">100 cal/cm²</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Korban:</span>
+                        <span class="stat-value"
+                            >{formatNumber(
+                                estimateCasualtiesByZone(
+                                    $currentBlastData.blastData.thermal,
+                                    "thermal",
+                                ),
+                            )}</span
+                        >
+                    </div>
+                </div>
+                <p class="zone-desc">Luka bakar tingkat 3, kebakaran massal</p>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="summary">
+            <div class="summary-item">
+                <span class="icon">👥</span>
+                <div>
+                    <p class="summary-label">Total Populasi Terdampak</p>
+                    <p class="summary-value">
+                        {formatNumber($currentBlastData.population)} orang
+                    </p>
+                </div>
+            </div>
+            <div class="summary-item">
+                <span class="icon">🏗️</span>
+                <div>
+                    <p class="summary-label">Kerusakan Infrastruktur</p>
+                    <div class="progress-bar">
+                        <div
+                            class="progress-fill"
+                            style="width: {$currentBlastData.infrastructure}%"
+                        ></div>
+                        <span class="progress-text"
+                            >{$currentBlastData.infrastructure}%</span
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {/if}
 
 <style>
     .blast-info {
         width: 100%;
-        max-width: 600px;
+        max-width: 700px;
     }
 
     .header {
@@ -157,6 +368,12 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
         font-size: var(--font-size-xl);
         color: var(--color-text-primary);
         margin: 0;
+    }
+
+    h3 {
+        font-size: var(--font-size-lg);
+        color: var(--color-text-primary);
+        margin: 0 0 var(--space-md) 0;
     }
 
     .copy-btn {
@@ -181,69 +398,157 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
         border-color: var(--color-primary);
     }
 
-    .info-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .info-table tr {
-        transition: background-color var(--transition-fast);
-    }
-
-    .info-table tr:hover {
-        background: var(--color-bg-tertiary);
-    }
-
-    .info-table th,
-    .info-table td {
+    /* Country Info */
+    .country-info {
+        margin-bottom: var(--space-lg);
         padding: var(--space-md);
-        text-align: left;
-        border-bottom: 1px solid var(--color-border);
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
     }
 
-    .info-table tr:last-child th,
-    .info-table tr:last-child td {
-        border-bottom: none;
+    .country-name {
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        color: var(--color-primary);
+        margin: var(--space-xs) 0 0 0;
     }
 
-    .info-table th {
-        font-weight: 600;
-        color: var(--color-text-secondary);
-        white-space: nowrap;
+    /* Blast Zones Visual */
+    .blast-zones-visual {
+        margin-bottom: var(--space-lg);
+        padding: var(--space-md);
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
+    }
+
+    .zones-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: var(--space-md) auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .zone-circle {
+        position: absolute;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    /* Zones Detail */
+    .zones-detail {
+        margin-bottom: var(--space-lg);
+    }
+
+    .zone-item {
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+        border-left: 4px solid;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .zone-item:hover {
+        transform: translateX(4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .zone-header {
         display: flex;
         align-items: center;
         gap: var(--space-sm);
+        margin-bottom: var(--space-sm);
     }
 
-    .info-table td {
-        color: var(--color-text-primary);
+    .zone-name {
+        font-weight: 600;
         font-size: var(--font-size-base);
+        color: var(--color-text-primary);
+        flex: 1;
+    }
+
+    .zone-radius {
+        font-weight: 700;
+        font-size: var(--font-size-lg);
+        color: var(--color-primary);
+    }
+
+    .zone-stats {
+        display: flex;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-sm);
+    }
+
+    .stat {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+
+    .stat-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+    }
+
+    .stat-value {
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        color: var(--color-text-primary);
+    }
+
+    .zone-desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin: 0;
+        font-style: italic;
+    }
+
+    /* Summary */
+    .summary {
+        display: grid;
+        gap: var(--space-md);
+    }
+
+    .summary-item {
+        display: flex;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
+        align-items: center;
+    }
+
+    .summary-item .icon {
+        font-size: 2rem;
+    }
+
+    .summary-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin: 0 0 var(--space-xs) 0;
+    }
+
+    .summary-value {
+        font-size: var(--font-size-lg);
+        font-weight: 700;
+        color: var(--color-primary);
+        margin: 0;
     }
 
     .icon {
         font-size: var(--font-size-lg);
     }
 
-    .highlight {
-        font-weight: 700;
-        color: var(--color-primary);
-        font-size: var(--font-size-lg);
-    }
-
-    .danger-row {
-        background: hsla(0, 70%, 50%, 0.05);
-    }
-
-    .warning-row {
-        background: hsla(40, 90%, 55%, 0.05);
-    }
-
     .progress-bar {
         position: relative;
         width: 100%;
         height: 28px;
-        background: var(--color-bg-tertiary);
+        background: var(--color-bg-secondary);
         border-radius: var(--radius-sm);
         overflow: hidden;
     }
@@ -272,5 +577,12 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
         font-weight: 600;
         font-size: var(--font-size-sm);
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 768px) {
+        .zone-stats {
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
     }
 </style>

@@ -12,6 +12,15 @@
         estimatePopulationAffected,
         generateId,
     } from "$lib/utils/blastCalculator";
+    import {
+        generateRandomWind,
+        calculateFalloutPattern,
+    } from "$lib/utils/windEffects";
+    import {
+        BLAST_ZONE_COLORS,
+        BLAST_ZONE_OPACITY,
+        ANIMATION,
+    } from "$lib/utils/constants";
     import type { BlastEvent } from "$lib/types";
 
     export let mapId = "chartdiv";
@@ -19,7 +28,15 @@
     let root: any;
     let chart: any;
     let polygonSeries: any;
-    let explosionSeries: any;
+
+    // Series untuk setiap zona blast
+    let fireballSeries: any;
+    let radiationSeries: any;
+    let heavyBlastSeries: any;
+    let moderateBlastSeries: any;
+    let lightBlastSeries: any;
+    let thermalSeries: any;
+    let falloutSeries: any;
 
     onMount(async () => {
         if (!browser) return;
@@ -171,7 +188,7 @@
 
         polygonSeries.mapPolygons.template.adapters.add(
             "fill",
-            function (fill, target) {
+            function (fill: any, target: any) {
                 if (colorIndex < 10) {
                     colorIndex++;
                 } else {
@@ -196,73 +213,304 @@
             fillOpacity: 1,
         });
 
-        // Create explosion series
-        explosionSeries = chart.series.push(
-            am5map.MapPointSeries.new(root, {
-                valueField: "radius",
-                polygonIdField: "id",
-            }),
+        // Create blast zone series - diurutkan dari terluar ke terdalam
+        // Agar zona terkecil (fireball) tampil di atas
+
+        // Helper function untuk create zone series
+        function createZoneSeries(
+            name: string,
+            color: string,
+            opacity: number,
+            animDuration: number,
+            animDelay: number,
+        ) {
+            const series = chart.series.push(
+                am5map.MapPointSeries.new(root, {}),
+            );
+
+            series.bullets.push(function (
+                root: any,
+                series: any,
+                dataItem: any,
+            ) {
+                const circle = am5.Circle.new(root, {
+                    radius: 0,
+                    fillOpacity: opacity,
+                    fill: am5.color(color),
+                    tooltipText: `{zoneName}: {radius} km`,
+                });
+
+                // Animasi expand dengan delay
+                setTimeout(() => {
+                    circle.animate({
+                        key: "radius",
+                        from: 0,
+                        to: dataItem.dataContext.radius,
+                        duration: animDuration,
+                        easing: am5.ease.out(am5.ease.cubic),
+                    });
+
+                    // Pulse effect untuk shockwave
+                    if (name.includes("Blast")) {
+                        for (let i = 0; i < ANIMATION.pulseRepeat; i++) {
+                            setTimeout(
+                                () => {
+                                    circle.animate({
+                                        key: "fillOpacity",
+                                        from: opacity,
+                                        to: opacity * 0.3,
+                                        duration: ANIMATION.pulseDuration / 2,
+                                        easing: am5.ease.inOut(am5.ease.cubic),
+                                    });
+
+                                    // Chain dengan nested timeout
+                                    setTimeout(() => {
+                                        circle.animate({
+                                            key: "fillOpacity",
+                                            from: opacity * 0.3,
+                                            to: opacity,
+                                            duration:
+                                                ANIMATION.pulseDuration / 2,
+                                            easing: am5.ease.inOut(
+                                                am5.ease.cubic,
+                                            ),
+                                        });
+                                    }, ANIMATION.pulseDuration / 2);
+                                },
+                                i * ANIMATION.pulseDuration + animDuration,
+                            );
+                        }
+                    }
+                }, animDelay);
+
+                return am5.Bullet.new(root, { sprite: circle });
+            });
+
+            return series;
+        }
+
+        // Buat series untuk setiap zona (dari terluar ke terdalam)
+        thermalSeries = createZoneSeries(
+            "Thermal Radiation",
+            BLAST_ZONE_COLORS.thermal,
+            BLAST_ZONE_OPACITY.thermal,
+            ANIMATION.duration.thermal,
+            ANIMATION.delay.thermal,
         );
 
-        explosionSeries.bullets.push(function (root, series, dataItem: any) {
-            const circle = am5.Circle.new(root, {
-                radius: dataItem.dataContext.radius,
-                fillOpacity: 0.4,
-                fill: am5.color(0xff0000),
-                cursorOverStyle: "pointer",
-                tooltipText: "{name}: {radius} km radius",
-            });
+        lightBlastSeries = createZoneSeries(
+            "Light Blast",
+            BLAST_ZONE_COLORS.lightBlast,
+            BLAST_ZONE_OPACITY.lightBlast,
+            ANIMATION.duration.lightBlast,
+            ANIMATION.delay.lightBlast,
+        );
 
-            circle.animate({
-                key: "radius",
-                from: 0,
-                to: dataItem.dataContext.radius,
-                duration: 1000,
-                easing: am5.ease.out(am5.ease.cubic),
-            });
+        moderateBlastSeries = createZoneSeries(
+            "Moderate Blast",
+            BLAST_ZONE_COLORS.moderateBlast,
+            BLAST_ZONE_OPACITY.moderateBlast,
+            ANIMATION.duration.moderateBlast,
+            ANIMATION.delay.moderateBlast,
+        );
 
-            return am5.Bullet.new(root, { sprite: circle });
+        heavyBlastSeries = createZoneSeries(
+            "Heavy Blast",
+            BLAST_ZONE_COLORS.heavyBlast,
+            BLAST_ZONE_OPACITY.heavyBlast,
+            ANIMATION.duration.heavyBlast,
+            ANIMATION.delay.heavyBlast,
+        );
+
+        radiationSeries = createZoneSeries(
+            "Radiation",
+            BLAST_ZONE_COLORS.radiation,
+            BLAST_ZONE_OPACITY.radiation,
+            ANIMATION.duration.radiation,
+            ANIMATION.delay.radiation,
+        );
+
+        fireballSeries = createZoneSeries(
+            "Fireball",
+            BLAST_ZONE_COLORS.fireball,
+            BLAST_ZONE_OPACITY.fireball,
+            ANIMATION.duration.fireball,
+            ANIMATION.delay.fireball,
+        );
+
+        // Fallout pattern series (polygon)
+        falloutSeries = chart.series.push(
+            am5map.MapPolygonSeries.new(root, {}),
+        );
+
+        falloutSeries.mapPolygons.template.setAll({
+            fill: am5.color(0x00ff00),
+            fillOpacity: 0.3,
+            stroke: am5.color(0x00aa00),
+            strokeWidth: 1,
+            tooltipText: "Fallout Zone",
         });
 
         // Handle country click
-        polygonSeries.mapPolygons.template.events.on("click", function (ev) {
-            const dataItem: any = ev.target.dataItem;
-            const centroid = dataItem.geometry;
-            const countryName = dataItem.dataContext.name || "Tidak diketahui";
+        polygonSeries.mapPolygons.template.events.on(
+            "click",
+            function (ev: any) {
+                const dataItem: any = ev.target.dataItem;
+                const countryName =
+                    dataItem.dataContext.name || "Tidak diketahui";
 
-            const blastData = calculateBlastRadius($selectedBomb.yieldKt);
-            const population = estimatePopulationAffected(blastData.thermal);
-            const infrastructure = Math.round(70 + Math.random() * 30);
+                // Get centroid coordinates
+                // amCharts polygon geometry might not have direct centroid
+                // We need to calculate it or use approximation
+                let latitude = 0;
+                let longitude = 0;
 
-            // Add explosion to map
-            explosionSeries.data.push({
-                id: dataItem.get("id"),
-                name: countryName,
-                radius: parseFloat(blastData.thermal.toString()),
-                geometry: { type: "Point", coordinates: centroid },
-            });
+                // Try to get from polygon's visualLongitude/visualLatitude
+                if (
+                    ev.target.visualLongitude !== undefined &&
+                    ev.target.visualLatitude !== undefined
+                ) {
+                    longitude = ev.target.visualLongitude();
+                    latitude = ev.target.visualLatitude();
+                } else if (
+                    dataItem.get("longitude") !== undefined &&
+                    dataItem.get("latitude") !== undefined
+                ) {
+                    // Fallback to dataItem properties
+                    longitude = dataItem.get("longitude");
+                    latitude = dataItem.get("latitude");
+                } else {
+                    // Method 2: Calculate from geometry coordinates
+                    const geometry = dataItem.dataContext.geometry;
+                    if (geometry && geometry.coordinates) {
+                        // Simple centroid calculation for polygon
+                        if (geometry.type === "Polygon") {
+                            const coords = geometry.coordinates[0]; // First ring (outer boundary)
+                            let sumLat = 0,
+                                sumLon = 0,
+                                count = 0;
+                            for (const coord of coords) {
+                                sumLon += coord[0];
+                                sumLat += coord[1];
+                                count++;
+                            }
+                            longitude = sumLon / count;
+                            latitude = sumLat / count;
+                        } else if (geometry.type === "MultiPolygon") {
+                            // For MultiPolygon, use first polygon's centroid
+                            const coords = geometry.coordinates[0][0]; // First polygon, first ring
+                            let sumLat = 0,
+                                sumLon = 0,
+                                count = 0;
+                            for (const coord of coords) {
+                                sumLon += coord[0];
+                                sumLat += coord[1];
+                                count++;
+                            }
+                            longitude = sumLon / count;
+                            latitude = sumLat / count;
+                        }
+                    }
 
-            // Update current blast data
-            currentBlastData.set({
-                countryName,
-                blastData,
-                population,
-                infrastructure,
-            });
+                    // Method 3: Use visual bounds as last resort
+                    if (latitude === 0 && longitude === 0) {
+                        const bbox = ev.target.geoBounds();
+                        if (bbox) {
+                            longitude = (bbox.left + bbox.right) / 2;
+                            latitude = (bbox.top + bbox.bottom) / 2;
+                        } else {
+                            console.warn(
+                                "Could not determine centroid for",
+                                countryName,
+                            );
+                            return;
+                        }
+                    }
+                }
 
-            // Add to history
-            const blastEvent: BlastEvent = {
-                id: generateId(),
-                countryName,
-                bombType: $selectedBomb,
-                blastData,
-                timestamp: Date.now(),
-                coordinates: centroid,
-            };
+                const centroid = [longitude, latitude];
 
-            addBlastToHistory(blastEvent);
-        });
+                const blastData = calculateBlastRadius($selectedBomb.yieldKt);
+                const population = estimatePopulationAffected(
+                    blastData.thermal,
+                );
+                const infrastructure = Math.round(70 + Math.random() * 30);
 
+                // Generate wind configuration
+                const wind = generateRandomWind();
+
+                // Calculate fallout pattern
+                const falloutPattern = calculateFalloutPattern(
+                    latitude, // latitude
+                    longitude, // longitude
+                    $selectedBomb.yieldKt,
+                    wind,
+                );
+
+                // Add all blast zones to map
+                const pointGeometry = { type: "Point", coordinates: centroid };
+
+                thermalSeries.data.push({
+                    zoneName: "Thermal Radiation",
+                    radius: blastData.thermal,
+                    geometry: pointGeometry,
+                });
+
+                lightBlastSeries.data.push({
+                    zoneName: "Light Blast (1 psi)",
+                    radius: blastData.lightBlast,
+                    geometry: pointGeometry,
+                });
+
+                moderateBlastSeries.data.push({
+                    zoneName: "Moderate Blast (5 psi)",
+                    radius: blastData.moderateBlast,
+                    geometry: pointGeometry,
+                });
+
+                heavyBlastSeries.data.push({
+                    zoneName: "Heavy Blast (20 psi)",
+                    radius: blastData.heavyBlast,
+                    geometry: pointGeometry,
+                });
+
+                radiationSeries.data.push({
+                    zoneName: "Radiation Zone",
+                    radius: blastData.radiation,
+                    geometry: pointGeometry,
+                });
+
+                fireballSeries.data.push({
+                    zoneName: "Fireball",
+                    radius: blastData.fireball,
+                    geometry: pointGeometry,
+                });
+
+                // Add fallout pattern (simplified ellipse)
+                // TODO: Implement proper ellipse generation
+                // For now, skip fallout visualization to avoid complexity
+
+                // Update current blast data
+                currentBlastData.set({
+                    countryName,
+                    blastData,
+                    population,
+                    infrastructure,
+                });
+
+                // Add to history
+                const blastEvent: BlastEvent = {
+                    id: generateId(),
+                    countryName,
+                    bombType: $selectedBomb,
+                    blastData,
+                    timestamp: Date.now(),
+                    coordinates: centroid,
+                };
+
+                addBlastToHistory(blastEvent);
+            },
+        );
         // Add zoom control
         const zoomControl = chart.set(
             "zoomControl",
