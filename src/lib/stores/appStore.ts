@@ -12,6 +12,22 @@ export const selectedBomb = writable<BombType>(DEFAULT_BOMB);
  */
 export const blastHistory = writable<BlastEvent[]>([]);
 
+// Comparison mode state
+export const comparisonMode = writable<boolean>(false);
+export const comparisonBombs = writable<BombType[]>([]);
+
+// Derived store: get active bombs for simulation
+// In comparison mode, returns selected bombs; otherwise returns current selected bomb
+export const activeBombs = derived(
+    [comparisonMode, selectedBomb, comparisonBombs],
+    ([$comparisonMode, $selectedBomb, $comparisonBombs]) => {
+        if ($comparisonMode && $comparisonBombs.length === 2) {
+            return $comparisonBombs;
+        }
+        return [$selectedBomb];
+    }
+);
+
 /**
  * Current blast data (if any)
  */

@@ -6,6 +6,9 @@
     import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
     import LocationSearch from "$lib/components/LocationSearch.svelte";
     import ExportMenu from "$lib/components/ExportMenu.svelte";
+    import ComparisonToggle from "$lib/components/ComparisonToggle.svelte";
+    import ComparisonPanel from "$lib/components/ComparisonPanel.svelte";
+    import { comparisonMode } from "$lib/stores/appStore";
 
     let mapChartRef: any;
 </script>
@@ -30,6 +33,7 @@
 
         <div class="controls-section glass">
             <BombSelector />
+            <ComparisonToggle />
             <LocationSearch
                 on:select={(e) => {
                     // Pan map to selected location if mapChartRef is available
@@ -47,6 +51,7 @@
                         peta
                     </li>
                     <li>Lihat animasi dan data prediksi dampak</li>
+                    <li>Aktifkan Comparison Mode untuk membandingkan 2 bom</li>
                 </ol>
             </div>
         </div>
@@ -55,10 +60,14 @@
             <MapChart bind:this={mapChartRef} />
         </div>
 
-        <div class="info-grid">
-            <BlastInfo />
-            <BlastHistory />
-        </div>
+        {#if $comparisonMode}
+            <ComparisonPanel />
+        {:else}
+            <div class="info-grid">
+                <BlastInfo />
+                <BlastHistory />
+            </div>
+        {/if}
 
         <footer class="footer">
             <p>
