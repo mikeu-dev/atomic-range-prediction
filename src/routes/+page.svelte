@@ -11,9 +11,19 @@
     import TutorialButton from "$lib/components/TutorialButton.svelte";
     import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import EducationalPanel from "$lib/components/EducationalPanel.svelte";
+    import HistoricalEvents from "$lib/components/HistoricalEvents.svelte";
     import { comparisonMode } from "$lib/stores/appStore";
 
     let mapChartRef: any;
+
+    function handleHistoricalSimulation(event: CustomEvent) {
+        const { lat, lon, bombId } = event.detail;
+        // Pan map to historical location
+        if (mapChartRef && mapChartRef.panToLocation) {
+            mapChartRef.panToLocation(lat, lon, 8);
+        }
+        // Trigger click on map would be ideal but we can just pan
+    }
 </script>
 
 <div id="app-container">
@@ -31,6 +41,7 @@
             </div>
             <div class="header-actions">
                 <LanguageSwitcher />
+                <HistoricalEvents on:simulate={handleHistoricalSimulation} />
                 <EducationalPanel />
                 <TutorialButton />
                 <ExportMenu />
