@@ -470,6 +470,9 @@
                 const blastData = calculateBlastRadius($selectedBomb.yieldKt);
                 const population = estimatePopulationAffected(
                     blastData.thermal,
+                    latitude,
+                    longitude,
+                    sanitizedCountryName,
                 );
                 const infrastructure = Math.round(70 + Math.random() * 30);
 

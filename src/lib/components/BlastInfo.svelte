@@ -9,6 +9,7 @@
         BLAST_ZONE_COLORS,
         BLAST_ZONE_OPACITY,
     } from "$lib/utils/constants";
+    import { getPopulationDensityInfo } from "$lib/utils/populationData";
 
     let copySuccess = false;
 
@@ -85,6 +86,25 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
         <div class="country-info">
             <h3>Wilayah Target</h3>
             <p class="country-name">{$currentBlastData.countryName}</p>
+
+            <!-- Population Density Info -->
+            {#if $currentBlastData.blastData}
+                {@const densityInfo = getPopulationDensityInfo(
+                    $currentBlastData.blastData.thermal || 0,
+                    0,
+                    $currentBlastData.countryName,
+                )}
+                <div class="density-badge">
+                    <span class="density-icon">📊</span>
+                    <div class="density-text">
+                        <span class="density-label">Kepadatan Populasi:</span>
+                        <span class="density-value"
+                            >{formatNumber(densityInfo.density)} orang/km²</span
+                        >
+                        <span class="density-source">({densityInfo.name})</span>
+                    </div>
+                </div>
+            {/if}
         </div>
 
         <!-- Mini Visualisasi Blast Zones -->
@@ -411,6 +431,46 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
         font-weight: 700;
         color: var(--color-primary);
         margin: var(--space-xs) 0 0 0;
+    }
+
+    .density-badge {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-top: var(--space-md);
+        padding: var(--space-sm) var(--space-md);
+        background: var(--color-bg-secondary);
+        border-radius: var(--radius-sm);
+        border-left: 3px solid var(--color-primary);
+    }
+
+    .density-icon {
+        font-size: 1.5rem;
+    }
+
+    .density-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .density-label {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .density-value {
+        font-size: var(--font-size-base);
+        font-weight: 700;
+        color: var(--color-text-primary);
+    }
+
+    .density-source {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+        font-style: italic;
     }
 
     /* Blast Zones Visual */

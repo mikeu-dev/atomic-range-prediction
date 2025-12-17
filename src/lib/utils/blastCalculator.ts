@@ -1,5 +1,6 @@
 import type { BlastData } from '$lib/types';
 import { isValidYield } from './validation';
+import { getPopulationDensity } from './populationData';
 
 /**
  * Calculate blast radius based on nuclear yield
@@ -55,19 +56,40 @@ export function calculateBlastRadius(yieldKt: number): BlastData {
 
 /**
  * Estimate population affected dengan breakdown per zona
- * Menggunakan area circle dan population density
+ * Menggunakan area circle dan population density berdasarkan lokasi
+ * 
+ * @param thermalRadius - Thermal radius in km
+ * @param lat - Latitude of blast location
+ * @param lon - Longitude of blast location
+ * @param countryName - Optional country name for density lookup
+ * @returns Estimated population affected
  */
-export function estimatePopulationAffected(thermalRadius: number): number {
+export function estimatePopulationAffected(
+    thermalRadius: number,
+    lat?: number,
+    lon?: number,
+    countryName?: string
+): number {
     // Validate radius
     if (isNaN(thermalRadius) || thermalRadius < 0) {
         throw new Error(`Invalid radius: ${thermalRadius}`);
     }
 
-    // Simplified calculation based on average population density
-    const avgDensityPerKm2 = 50; // Very rough global average
+    // Get population density for location
+    let density: number;
+    if (lat !== undefined && lon !== undefined) {
+        density = getPopulationDensity(lat, lon, countryName);
+    } else {
+        // Fallback if coordinates not provided (backward compatibility)
+        density = 50;
+    }
+
     const area = Math.PI * Math.pow(thermalRadius, 2);
-    const estimated = Math.round(area * avgDensityPerKm2 * (1 + Math.random()));
-    return Math.min(estimated, 10000000); // Cap at 10M for realism
+    // Add realistic variability: ±10%
+    const variability = 0.9 + Math.random() * 0.2;
+    const estimated = Math.round(area * density * variability);
+
+    return Math.min(estimated, 50000000); // Cap at 50M for realism
 }
 
 /**
