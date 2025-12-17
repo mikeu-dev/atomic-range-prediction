@@ -99,7 +99,6 @@ export const tutorialSteps: DriveStep[] = [
         popover: {
             title: '🎉 Siap Menjelajah!',
             description: 'Anda sudah siap menggunakan aplikasi! <br><br>Mulai dengan <strong>memilih bom</strong>, lalu <strong>klik negara di peta</strong>. Tutorial ini bisa diulang kapan saja dengan klik tombol Help (❓) di header.',
-            side: 'center',
             align: 'center'
         }
     }
