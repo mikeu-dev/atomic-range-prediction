@@ -9,6 +9,8 @@
     import ComparisonToggle from "$lib/components/ComparisonToggle.svelte";
     import ComparisonPanel from "$lib/components/ComparisonPanel.svelte";
     import TutorialButton from "$lib/components/TutorialButton.svelte";
+    import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
+    import EducationalPanel from "$lib/components/EducationalPanel.svelte";
     import { comparisonMode } from "$lib/stores/appStore";
 
     let mapChartRef: any;
@@ -28,6 +30,8 @@
                 </p>
             </div>
             <div class="header-actions">
+                <LanguageSwitcher />
+                <EducationalPanel />
                 <TutorialButton />
                 <ExportMenu />
             </div>

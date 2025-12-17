@@ -1,0 +1,97 @@
+{
+    "app": {
+        "title": "Atomic Range Prediction",
+        "subtitle": "Interactive Simulation of Nuclear Bomb Impact with Global Map"
+    },
+    "header": {
+        "instructions": "How to Use:",
+        "step1": "Select bomb type from dropdown above",
+        "step2": "Search location or click directly on map",
+        "step3": "View animation and impact prediction data",
+        "step4": "Enable Comparison Mode to compare 2 bombs"
+    },
+    "bomb": {
+        "select": "Select Bomb Type",
+        "littleBoy": "Little Boy",
+        "littleBoyDesc": "Hiroshima bomb, 15kt",
+        "fatMan": "Fat Man",
+        "fatManDesc": "Nagasaki bomb, 21kt",
+        "castleBravo": "Castle Bravo",
+        "castleBravoDesc": "US thermonuclear test, 15,000kt",
+        "tsarBomba": "Tsar Bomba",
+        "tsarBombaDesc": "Largest bomb ever tested, 50,000kt",
+        "b83": "B83",
+        "b83Desc": "US strategic bomb, 1,200kt"
+    },
+    "comparison": {
+        "mode": "Comparison Mode",
+        "selectLabel": "Select 2 bombs to compare:",
+        "validation": "Please select exactly 2 bombs"
+    },
+    "search": {
+        "placeholder": "Search city or country...",
+        "noResults": "No results found",
+        "searching": "Searching..."
+    },
+    "export": {
+        "title": "Export & Share",
+        "exportPNG": "Export as PNG",
+        "exportPDF": "Export as PDF",
+        "exportJSON": "Export JSON",
+        "exportCSV": "Export CSV",
+        "shareLink": "Copy Share Link",
+        "linkCopied": "Link Copied!"
+    },
+    "tutorial": {
+        "welcome": "Welcome!",
+        "welcomeDesc": "Welcome to <strong>Atomic Range Prediction</strong> - interactive simulator to learn about atomic bomb impact. Let me show you how to use it!",
+        "bombSelector": "Select Bomb",
+        "bombSelectorDesc": "Choose bomb type from this dropdown. Available types from <strong>Little Boy</strong> (15kt) to <strong>Tsar Bomba</strong> (50,000kt)!",
+        "comparisonMode": "Comparison Mode",
+        "comparisonModeDesc": "Enable <strong>Comparison Mode</strong> to compare 2 bombs side-by-side. See the difference clearly!",
+        "locationSearch": "Search Location",
+        "locationSearchDesc": "Use search box to find cities or countries. Map will zoom automatically to selected location!",
+        "interactiveMap": "Interactive Map",
+        "interactiveMapDesc": "Click on <strong>any country</strong> on the map to start simulation. Blast zone animations will appear with 6 different colored zones!",
+        "exportMenu": "Export & Share",
+        "exportMenuDesc": "Export simulation results as <strong>PNG, PDF, JSON, or CSV</strong>. Or share via link for collaboration!",
+        "blastInfo": "Simulation Results",
+        "blastInfoDesc": "After clicking map, this panel displays impact details per zone, casualty estimates based on <strong>real population density</strong>, and complete breakdown.",
+        "history": "Simulation History",
+        "historyDesc": "All your simulations are saved here (max 10 latest). Click to view details or delete if not needed.",
+        "ready": "Ready to Explore!",
+        "readyDesc": "You're ready to use the app! <br><br>Start by <strong>selecting a bomb</strong>, then <strong>click a country on the map</strong>. This tutorial can be repeated anytime by clicking the Help button (❓) in the header."
+    },
+    "blastInfo": {
+        "title": "Simulation Data",
+        "targetArea": "Target Area",
+        "populationDensity": "Population Density:",
+        "estimatedCasualties": "Estimated Casualties",
+        "infrastructureDamage": "Infrastructure Damage",
+        "blastZones": "Blast Zones",
+        "fireball": "Fireball",
+        "radiation": "Radiation",
+        "heavyBlast": "Heavy Blast (20 psi)",
+        "moderateBlast": "Moderate Blast (5 psi)",
+        "lightBlast": "Light Blast (1 psi)",
+        "thermal": "Thermal Radiation"
+    },
+    "comparisonPanel": {
+        "title": "Comparison Analysis",
+        "bomb1": "Bomb 1",
+        "bomb2": "Bomb 2",
+        "zone": "Zone",
+        "difference": "Difference",
+        "casualties": "Estimated Casualties:"
+    },
+    "history": {
+        "title": "Simulation History",
+        "empty": "No simulation history yet",
+        "emptyDesc": "Click on the map to start a simulation",
+        "clear": "Clear All",
+        "delete": "Delete"
+    },
+    "footer": {
+        "disclaimer": "⚠️ This simulation data is for educational purposes only. The formulas used are simple approximations and not actual military calculations."
+    }
+}

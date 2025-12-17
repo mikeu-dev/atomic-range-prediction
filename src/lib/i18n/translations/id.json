@@ -1,0 +1,97 @@
+{
+    "app": {
+        "title": "Prediksi Jangkauan Atom",
+        "subtitle": "Simulasi Interaktif Prediksi Luas Sebaran Bom Atom dengan Peta Global"
+    },
+    "header": {
+        "instructions": "Cara Menggunakan:",
+        "step1": "Pilih jenis bom dari dropdown di atas",
+        "step2": "Cari lokasi dengan search box atau klik langsung pada peta",
+        "step3": "Lihat animasi dan data prediksi dampak",
+        "step4": "Aktifkan Comparison Mode untuk membandingkan 2 bom"
+    },
+    "bomb": {
+        "select": "Pilih Jenis Bom",
+        "littleBoy": "Little Boy",
+        "littleBoyDesc": "Bom Hiroshima, 15kt",
+        "fatMan": "Fat Man",
+        "fatManDesc": "Bom Nagasaki, 21kt",
+        "castleBravo": "Castle Bravo",
+        "castleBravoDesc": "Uji coba thermonuklir AS, 15,000kt",
+        "tsarBomba": "Tsar Bomba",
+        "tsarBombaDesc": "Bom terbesar yang pernah diuji, 50,000kt",
+        "b83": "B83",
+        "b83Desc": "Bom strategis AS, 1,200kt"
+    },
+    "comparison": {
+        "mode": "Mode Perbandingan",
+        "selectLabel": "Pilih 2 bom untuk dibandingkan:",
+        "validation": "Harap pilih tepat 2 bom"
+    },
+    "search": {
+        "placeholder": "Cari kota atau negara...",
+        "noResults": "Tidak ada hasil",
+        "searching": "Mencari..."
+    },
+    "export": {
+        "title": "Export & Share",
+        "exportPNG": "Export as PNG",
+        "exportPDF": "Export as PDF",
+        "exportJSON": "Export JSON",
+        "exportCSV": "Export CSV",
+        "shareLink": "Salin Link Berbagi",
+        "linkCopied": "Link Tersalin!"
+    },
+    "tutorial": {
+        "welcome": "Selamat Datang!",
+        "welcomeDesc": "Selamat datang di <strong>Atomic Range Prediction</strong> - simulator interaktif untuk mempelajari dampak bom atom. Mari saya tunjukkan cara menggunakannya!",
+        "bombSelector": "Pilih Bom",
+        "bombSelectorDesc": "Pilih jenis bom dari dropdown ini. Tersedia berbagai tipe dari <strong>Little Boy</strong> (15kt) hingga <strong>Tsar Bomba</strong> (50,000kt)!",
+        "comparisonMode": "Mode Perbandingan",
+        "comparisonModeDesc": "Aktifkan <strong>Comparison Mode</strong> untuk membandingkan 2 bom secara side-by-side. Lihat perbedaan dampak dengan jelas!",
+        "locationSearch": "Cari Lokasi",
+        "locationSearchDesc": "Gunakan search box untuk mencari kota atau negara. Peta akan zoom otomatis ke lokasi yang dipilih!",
+        "interactiveMap": "Peta Interaktif",
+        "interactiveMapDesc": "Klik pada <strong>negara mana saja</strong> di peta untuk memulai simulasi. Animasi blast zones akan muncul dengan 6 zona berbeda warna!",
+        "exportMenu": "Export & Share",
+        "exportMenuDesc": "Export hasil simulasi sebagai <strong>PNG, PDF, JSON, atau CSV</strong>. Atau share via link untuk collaboration!",
+        "blastInfo": "Hasil Simulasi",
+        "blastInfoDesc": "Setelah klik peta, panel ini menampilkan detail dampak per zona, estimasi korban berdasarkan <strong>population density real</strong>, dan breakdown lengkap.",
+        "history": "Riwayat Simulasi",
+        "historyDesc": "Semua simulasi Anda tersimpan di sini (maksimal 10 terakhir). Klik untuk melihat detail atau hapus jika tidak diperlukan.",
+        "ready": "Siap Menjelajah!",
+        "readyDesc": "Anda sudah siap menggunakan aplikasi! <br><br>Mulai dengan <strong>memilih bom</strong>, lalu <strong>klik negara di peta</strong>. Tutorial ini bisa diulang kapan saja dengan klik tombol Help (❓) di header."
+    },
+    "blastInfo": {
+        "title": "Data Simulasi",
+        "targetArea": "Wilayah Target",
+        "populationDensity": "Kepadatan Populasi:",
+        "estimatedCasualties": "Estimasi Korban",
+        "infrastructureDamage": "Kerusakan Infrastruktur",
+        "blastZones": "Zona Ledakan",
+        "fireball": "Bola Api",
+        "radiation": "Radiasi",
+        "heavyBlast": "Ledakan Berat (20 psi)",
+        "moderateBlast": "Ledakan Sedang (5 psi)",
+        "lightBlast": "Ledakan Ringan (1 psi)",
+        "thermal": "Radiasi Termal"
+    },
+    "comparisonPanel": {
+        "title": "Analisis Perbandingan",
+        "bomb1": "Bom 1",
+        "bomb2": "Bom 2",
+        "zone": "Zona",
+        "difference": "Perbedaan",
+        "casualties": "Estimasi Korban:"
+    },
+    "history": {
+        "title": "Riwayat Simulasi",
+        "empty": "Belum ada riwayat simulasi",
+        "emptyDesc": "Klik peta untuk memulai simulasi",
+        "clear": "Hapus Semua",
+        "delete": "Hapus"
+    },
+    "footer": {
+        "disclaimer": "⚠️ Data simulasi ini hanya untuk tujuan edukasi. Formula yang digunakan adalah pendekatan sederhana dan bukan perhitungan militer yang sebenarnya."
+    }
+}

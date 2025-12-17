@@ -25,6 +25,7 @@
 		"@amcharts/amcharts5-geodata": "^5.1.5",
 		"driver.js": "^1.4.0",
 		"html2canvas": "^1.4.1",
-		"jspdf": "^3.0.4"
+		"jspdf": "^3.0.4",
+		"svelte-i18n": "^4.0.1"
 	}
 }
