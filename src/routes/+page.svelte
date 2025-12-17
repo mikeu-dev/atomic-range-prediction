@@ -5,69 +5,80 @@
     import BlastHistory from "$lib/components/BlastHistory.svelte";
     import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
     import LocationSearch from "$lib/components/LocationSearch.svelte";
+    import ExportMenu from "$lib/components/ExportMenu.svelte";
 
     let mapChartRef: any;
 </script>
 
-<main class="container">
-    <header class="header fade-in">
-        <div class="title-section">
-            <h1 class="title">
-                <span class="icon">☢️</span>
-                Atomic Range Prediction
-            </h1>
-            <p class="subtitle">
-                Simulasi Interaktif Prediksi Luas Sebaran Bom Atom dengan Peta
-                Global
+<div id="app-container">
+    <main class="container">
+        <header class="header fade-in">
+            <div class="title-section">
+                <h1 class="title">
+                    <span class="icon">☢️</span>
+                    Atomic Range Prediction
+                </h1>
+                <p class="subtitle">
+                    Simulasi Interaktif Prediksi Luas Sebaran Bom Atom dengan
+                    Peta Global
+                </p>
+            </div>
+            <div class="header-actions">
+                <ExportMenu />
+            </div>
+        </header>
+
+        <div class="controls-section glass">
+            <BombSelector />
+            <LocationSearch
+                on:select={(e) => {
+                    // Pan map to selected location if mapChartRef is available
+                    if (mapChartRef && mapChartRef.panToLocation) {
+                        mapChartRef.panToLocation(e.detail.lat, e.detail.lon);
+                    }
+                }}
+            />
+            <div class="instructions">
+                <h3>📍 Cara Menggunakan:</h3>
+                <ol>
+                    <li>Pilih jenis bom dari dropdown di atas</li>
+                    <li>
+                        Cari lokasi dengan search box atau klik langsung pada
+                        peta
+                    </li>
+                    <li>Lihat animasi dan data prediksi dampak</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="map-section">
+            <MapChart bind:this={mapChartRef} />
+        </div>
+
+        <div class="info-grid">
+            <BlastInfo />
+            <BlastHistory />
+        </div>
+
+        <footer class="footer">
+            <p>
+                💡 <strong>Atomic Range Prediction</strong> - Eksplorasi dampak bom
+                atom dengan peta interaktif dan animasi modern!
             </p>
-        </div>
-    </header>
-
-    <div class="controls-section glass">
-        <BombSelector />
-        <LocationSearch
-            on:select={(e) => {
-                // Pan map to selected location if mapChartRef is available
-                if (mapChartRef && mapChartRef.panToLocation) {
-                    mapChartRef.panToLocation(e.detail.lat, e.detail.lon);
-                }
-            }}
-        />
-        <div class="instructions">
-            <h3>📍 Cara Menggunakan:</h3>
-            <ol>
-                <li>Pilih jenis bom dari dropdown di atas</li>
-                <li>
-                    Cari lokasi dengan search box atau klik langsung pada peta
-                </li>
-                <li>Lihat animasi dan data prediksi dampak</li>
-            </ol>
-        </div>
-    </div>
-
-    <div class="map-section">
-        <MapChart bind:this={mapChartRef} />
-    </div>
-
-    <div class="info-grid">
-        <BlastInfo />
-        <BlastHistory />
-    </div>
-
-    <footer class="footer">
-        <p>
-            💡 <strong>Atomic Range Prediction</strong> - Eksplorasi dampak bom atom
-            dengan peta interaktif dan animasi modern!
-        </p>
-        <p class="disclaimer">
-            ⚠️ Data simulasi ini hanya untuk tujuan edukasi. Formula yang
-            digunakan adalah pendekatan sederhana dan bukan perhitungan militer
-            yang sebenarnya.
-        </p>
-    </footer>
-</main>
+            <p class="disclaimer">
+                ⚠️ Data simulasi ini hanya untuk tujuan edukasi. Formula yang
+                digunakan adalah pendekatan sederhana dan bukan perhitungan
+                militer yang sebenarnya.
+            </p>
+        </footer>
+    </main>
+</div>
 
 <style>
+    #app-container {
+        min-height: 100vh;
+    }
+
     .container {
         min-height: 100vh;
         padding: var(--space-2xl) var(--space-lg);
@@ -76,20 +87,29 @@
     }
 
     .header {
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         margin-bottom: var(--space-2xl);
+        gap: var(--space-lg);
     }
 
     .title-section {
+        flex: 1;
         display: flex;
         flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
         gap: var(--space-md);
     }
 
     .title {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: var(--space-md);
         font-size: var(--font-size-3xl);
         font-weight: 700;
@@ -190,9 +210,17 @@
             padding: var(--space-xl) var(--space-md);
         }
 
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
         .title {
             font-size: var(--font-size-2xl);
-            flex-direction: column;
         }
 
         .subtitle {
