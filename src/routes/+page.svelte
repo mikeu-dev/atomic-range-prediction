@@ -8,6 +8,7 @@
     import ExportMenu from "$lib/components/ExportMenu.svelte";
     import ComparisonToggle from "$lib/components/ComparisonToggle.svelte";
     import ComparisonPanel from "$lib/components/ComparisonPanel.svelte";
+    import TutorialButton from "$lib/components/TutorialButton.svelte";
     import { comparisonMode } from "$lib/stores/appStore";
 
     let mapChartRef: any;
@@ -27,6 +28,7 @@
                 </p>
             </div>
             <div class="header-actions">
+                <TutorialButton />
                 <ExportMenu />
             </div>
         </header>

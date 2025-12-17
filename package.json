@@ -23,6 +23,7 @@
 	"dependencies": {
 		"@amcharts/amcharts5": "^5.14.4",
 		"@amcharts/amcharts5-geodata": "^5.1.5",
+		"driver.js": "^1.4.0",
 		"html2canvas": "^1.4.1",
 		"jspdf": "^3.0.4"
 	}
