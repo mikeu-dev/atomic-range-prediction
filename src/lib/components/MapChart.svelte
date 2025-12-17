@@ -6,6 +6,8 @@
         selectedBomb,
         currentBlastData,
         addBlastToHistory,
+        comparisonMode,
+        comparisonBombs,
     } from "$lib/stores/appStore";
     import {
         calculateBlastRadius,
@@ -464,7 +466,7 @@
                 }
                 const sanitizedCountryName = countryValidation.value;
 
-                // Show calculating state
+                //Calculate and add blast zones
                 isCalculating = true;
 
                 const blastData = calculateBlastRadius($selectedBomb.yieldKt);
@@ -481,8 +483,8 @@
 
                 // Calculate fallout pattern
                 const falloutPattern = calculateFalloutPattern(
-                    latitude, // latitude
-                    longitude, // longitude
+                    latitude,
+                    longitude,
                     $selectedBomb.yieldKt,
                     wind,
                 );
@@ -529,7 +531,6 @@
                 // Add fallout pattern visualization
                 const falloutPoints = generateFalloutPolygon(falloutPattern);
 
-                // Create polygon geometry for fallout
                 const falloutGeometry = {
                     type: "Polygon",
                     coordinates: [falloutPoints],
