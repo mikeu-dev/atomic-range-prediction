@@ -1,9 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
-    import * as am5 from "@amcharts/amcharts5";
-    import * as am5map from "@amcharts/amcharts5/map";
-    import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
-    import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+    import { browser } from "$app/environment";
 
     import {
         selectedBomb,
@@ -19,12 +16,23 @@
 
     export let mapId = "chartdiv";
 
-    let root: am5.Root;
-    let chart: am5map.MapChart;
-    let polygonSeries: am5map.MapPolygonSeries;
-    let explosionSeries: am5map.MapPointSeries;
+    let root: any;
+    let chart: any;
+    let polygonSeries: any;
+    let explosionSeries: any;
 
-    onMount(() => {
+    onMount(async () => {
+        if (!browser) return;
+
+        // Dynamic import untuk avoid SSR issues
+        const am5 = await import("@amcharts/amcharts5");
+        const am5map = await import("@amcharts/amcharts5/map");
+        const { default: am5geodata_worldLow } = await import(
+            "@amcharts/amcharts5-geodata/worldLow"
+        );
+        const { default: am5themes_Animated } = await import(
+            "@amcharts/amcharts5/themes/Animated"
+        );
         // Create root element
         root = am5.Root.new(mapId);
         root.setThemes([am5themes_Animated.new(root)]);
