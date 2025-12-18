@@ -4,11 +4,12 @@
         calculateBlastRadius,
         estimatePopulationAffected,
     } from "$lib/utils/blastCalculator";
-    import { getPopulationDensityInfo } from "$lib/utils/populationData";
+    import { t, locale } from "$lib/i18n";
     import type { BlastData } from "$lib/types";
 
     function formatNumber(num: number): string {
-        return new Intl.NumberFormat("id-ID").format(num);
+        const currentLocale = $locale === "id" ? "id-ID" : "en-US";
+        return new Intl.NumberFormat(currentLocale).format(num);
     }
 
     function formatDifference(val1: number, val2: number): string {
@@ -56,18 +57,18 @@
     <div class="comparison-panel glass">
         <h3 class="panel-title">
             <span class="title-icon">📊</span>
-            Comparison Analysis
+            {$t("comparisonPanel.title")}
         </h3>
 
         <div class="bomb-headers">
             <div class="bomb-header bomb1">
-                <span class="bomb-badge">Bomb 1</span>
-                <span class="bomb-name">{bomb1.name}</span>
+                <span class="bomb-badge">{$t("comparisonPanel.bomb1")}</span>
+                <span class="bomb-name">{$t(`bomb.${bomb1.id}`)}</span>
                 <span class="bomb-yield">{formatNumber(bomb1.yieldKt)} kt</span>
             </div>
             <div class="bomb-header bomb2">
-                <span class="bomb-badge">Bomb 2</span>
-                <span class="bomb-name">{bomb2.name}</span>
+                <span class="bomb-badge">{$t("comparisonPanel.bomb2")}</span>
+                <span class="bomb-name">{$t(`bomb.${bomb2.id}`)}</span>
                 <span class="bomb-yield">{formatNumber(bomb2.yieldKt)} kt</span>
             </div>
         </div>
@@ -76,17 +77,17 @@
             <table class="comparison-table">
                 <thead>
                     <tr>
-                        <th>Zone</th>
-                        <th class="bomb1-col">{bomb1.name}</th>
-                        <th class="bomb2-col">{bomb2.name}</th>
-                        <th>Difference</th>
+                        <th>{$t("comparisonPanel.zone")}</th>
+                        <th class="bomb1-col">{$t(`bomb.${bomb1.id}`)}</th>
+                        <th class="bomb2-col">{$t(`bomb.${bomb2.id}`)}</th>
+                        <th>{$t("comparisonPanel.difference")}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="zone-name">
                             <span class="zone-icon">🔥</span>
-                            Fireball
+                            {$t("blastInfo.fireball")}
                         </td>
                         <td class="value bomb1-col"
                             >{bomb1Data.fireball.toFixed(2)} km</td
@@ -108,7 +109,7 @@
                     <tr>
                         <td class="zone-name">
                             <span class="zone-icon">☢️</span>
-                            Radiation
+                            {$t("blastInfo.radiation")}
                         </td>
                         <td class="value bomb1-col"
                             >{bomb1Data.radiation.toFixed(2)} km</td
@@ -131,7 +132,7 @@
                     <tr>
                         <td class="zone-name">
                             <span class="zone-icon">💥</span>
-                            Heavy Blast
+                            {$t("blastInfo.heavyBlast")}
                         </td>
                         <td class="value bomb1-col"
                             >{bomb1Data.heavyBlast.toFixed(2)} km</td
@@ -154,7 +155,7 @@
                     <tr>
                         <td class="zone-name">
                             <span class="zone-icon">💣</span>
-                            Moderate Blast
+                            {$t("blastInfo.moderateBlast")}
                         </td>
                         <td class="value bomb1-col"
                             >{bomb1Data.moderateBlast.toFixed(2)} km</td
@@ -177,7 +178,7 @@
                     <tr>
                         <td class="zone-name">
                             <span class="zone-icon">🌊</span>
-                            Light Blast
+                            {$t("blastInfo.lightBlast")}
                         </td>
                         <td class="value bomb1-col"
                             >{bomb1Data.lightBlast.toFixed(2)} km</td
@@ -200,7 +201,7 @@
                     <tr>
                         <td class="zone-name">
                             <span class="zone-icon">🌡️</span>
-                            Thermal
+                            {$t("blastInfo.thermal")}
                         </td>
                         <td class="value bomb1-col"
                             >{bomb1Data.thermal.toFixed(2)} km</td
@@ -225,7 +226,9 @@
 
         <div class="summary-stats">
             <div class="stat-item">
-                <span class="stat-label">Estimated Casualties:</span>
+                <span class="stat-label"
+                    >{$t("comparisonPanel.casualties")}</span
+                >
                 <div class="stat-values">
                     <span class="stat-value bomb1-text"
                         >{formatNumber(bomb1Pop)}</span

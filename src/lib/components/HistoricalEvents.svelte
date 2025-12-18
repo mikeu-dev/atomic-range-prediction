@@ -38,7 +38,7 @@
 
 <button class="panel-trigger" on:click={() => (showPanel = !showPanel)}>
     <span class="icon">📜</span>
-    <span class="text">History</span>
+    <span class="text">{$t("historical.history")}</span>
 </button>
 
 {#if showPanel}
@@ -46,9 +46,9 @@
         class="historical-overlay"
         on:click={() => (showPanel = false)}
         on:keydown={(e) => e.key === "Escape" && (showPanel = false)}
-        role="dialog"
-        aria-modal="true"
-        tabindex="-1"
+        role="button"
+        tabindex="0"
+        aria-label="Close panel"
     >
         <div
             class="historical-panel glass"
@@ -57,7 +57,7 @@
             role="document"
         >
             <div class="panel-header">
-                <h3>📜 Historical Nuclear Events</h3>
+                <h3>{$t("historical.title")}</h3>
                 <button class="close-btn" on:click={() => (showPanel = false)}
                     >✕</button
                 >
@@ -65,7 +65,9 @@
 
             <div class="panel-content">
                 <div class="category-section">
-                    <h4 class="category-title">⚔️ Warfare (World War II)</h4>
+                    <h4 class="category-title">
+                        ⚔️ {$t("historical.warfare")}
+                    </h4>
                     <div class="events-grid">
                         {#each warfareEvents as event}
                             <div class="event-card warfare">
@@ -90,7 +92,9 @@
                                     <div class="event-stats">
                                         <div class="stat">
                                             <span class="stat-label"
-                                                >Immediate Deaths:</span
+                                                >{$t(
+                                                    "historical.immediateDeaths",
+                                                )}:</span
                                             >
                                             <span class="stat-value"
                                                 >{event.casualties.immediate.toLocaleString()}</span
@@ -98,7 +102,9 @@
                                         </div>
                                         <div class="stat">
                                             <span class="stat-label"
-                                                >Total Deaths:</span
+                                                >{$t(
+                                                    "historical.totalDeaths",
+                                                )}:</span
                                             >
                                             <span class="stat-value"
                                                 >{event.casualties.total.toLocaleString()}</span
@@ -110,7 +116,7 @@
                                     class="simulate-btn"
                                     on:click={() => simulateEvent(event)}
                                 >
-                                    🎯 Simulate This Event
+                                    🎯 {$t("historical.simulate")}
                                 </button>
                             </div>
                         {/each}
@@ -118,7 +124,7 @@
                 </div>
 
                 <div class="category-section">
-                    <h4 class="category-title">🧪 Nuclear Tests</h4>
+                    <h4 class="category-title">🧪 {$t("historical.tests")}</h4>
                     <div class="events-grid">
                         {#each testEvents as event}
                             <div class="event-card test">
@@ -145,7 +151,7 @@
                                     class="simulate-btn"
                                     on:click={() => simulateEvent(event)}
                                 >
-                                    🎯 Simulate This Event
+                                    🎯 {$t("historical.simulate")}
                                 </button>
                             </div>
                         {/each}
@@ -262,7 +268,7 @@
         border-radius: 50%;
 
         font-size: var(--font-size-lg);
-        color: var(--color-text-secondary);
+        color: var(--text-secondary);
         cursor: pointer;
 
         transition: all var(--transition-fast);

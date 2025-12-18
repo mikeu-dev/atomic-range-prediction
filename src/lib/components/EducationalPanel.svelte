@@ -75,7 +75,7 @@
                     <li>Mengkontaminasi makanan, air, tanah</li>
                     <li>Efek kesehatan jangka panjang (kanker, kerusakan genetik)</li>
                 </ul>
-                <p><strong>Perlindungan:</strong> Berlindung di basement atau pusat bangunan. Hindari area terkontaminasi. Ikuti instruksi layanan darurat.</p>
+                <p>Perlindungan: Berlindung di basement atau pusat bangunan. Hindari area terkontaminasi. Ikuti instruksi layanan darurat.</p>
             `,
         },
         {
@@ -165,7 +165,7 @@
 
 <button class="panel-trigger" on:click={() => (showPanel = !showPanel)}>
     <span class="icon">📚</span>
-    <span class="text">Learn</span>
+    <span class="text">{$t("educational.learn")}</span>
 </button>
 
 {#if showPanel}
@@ -173,7 +173,9 @@
         class="educational-overlay"
         on:click={() => (showPanel = false)}
         on:keydown={(e) => e.key === "Escape" && (showPanel = false)}
-        role="presentation"
+        role="button"
+        tabindex="0"
+        aria-label="Close panel"
     >
         <div
             class="educational-panel glass"
@@ -184,10 +186,14 @@
             tabindex="-1"
         >
             <div class="panel-header">
-                <h3>📚 Educational Resources</h3>
-                <button class="close-btn" on:click={() => (showPanel = false)}
-                    >✕</button
+                <h3>{$t("educational.title")}</h3>
+                <button
+                    class="close-btn"
+                    on:click={() => (showPanel = false)}
+                    title="Close"
                 >
+                    ✕
+                </button>
             </div>
 
             <div class="panel-content">
@@ -218,7 +224,7 @@
                                 class="back-btn"
                                 on:click={() => (selectedTopic = null)}
                             >
-                                ← Back to Topics
+                                ← {$t("educational.back")}
                             </button>
                         </div>
                     {/if}

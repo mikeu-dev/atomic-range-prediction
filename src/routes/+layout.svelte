@@ -1,6 +1,7 @@
 <script lang="ts">
 	import "../app.css";
 	import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
+	import Toast from "$lib/components/Toast.svelte";
 
 	let { children } = $props();
 </script>
@@ -12,5 +13,6 @@
 </svelte:head>
 
 <DarkModeToggle />
+<Toast />
 
 {@render children()}

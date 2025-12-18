@@ -3,8 +3,6 @@
     import MapChart from "$lib/components/MapChart.svelte";
     import BlastInfo from "$lib/components/BlastInfo.svelte";
     import BlastHistory from "$lib/components/BlastHistory.svelte";
-    import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
-    import LocationSearch from "$lib/components/LocationSearch.svelte";
     import ExportMenu from "$lib/components/ExportMenu.svelte";
     import ComparisonToggle from "$lib/components/ComparisonToggle.svelte";
     import ComparisonPanel from "$lib/components/ComparisonPanel.svelte";
@@ -13,17 +11,17 @@
     import EducationalPanel from "$lib/components/EducationalPanel.svelte";
     import HistoricalEvents from "$lib/components/HistoricalEvents.svelte";
     import PlaybackControl from "$lib/components/PlaybackControl.svelte";
+    import LocationSearch from "$lib/components/LocationSearch.svelte";
     import { comparisonMode } from "$lib/stores/appStore";
+    import { t } from "$lib/i18n";
 
     let mapChartRef: any;
 
     function handleHistoricalSimulation(event: CustomEvent) {
-        const { lat, lon, bombId } = event.detail;
-        // Pan map to historical location
+        const { lat, lon } = event.detail;
         if (mapChartRef && mapChartRef.panToLocation) {
             mapChartRef.panToLocation(lat, lon, 8);
         }
-        // Trigger click on map would be ideal but we can just pan
     }
 </script>
 
@@ -33,11 +31,10 @@
             <div class="title-section">
                 <h1 class="title">
                     <span class="icon">☢️</span>
-                    Atomic Range Prediction
+                    {$t("app.title")}
                 </h1>
                 <p class="subtitle">
-                    Simulasi Interaktif Prediksi Luas Sebaran Bom Atom dengan
-                    Peta Global
+                    {$t("app.subtitle")}
                 </p>
             </div>
             <div class="header-actions">
@@ -54,22 +51,18 @@
             <ComparisonToggle />
             <LocationSearch
                 on:select={(e) => {
-                    // Pan map to selected location if mapChartRef is available
                     if (mapChartRef && mapChartRef.panToLocation) {
                         mapChartRef.panToLocation(e.detail.lat, e.detail.lon);
                     }
                 }}
             />
             <div class="instructions">
-                <h3>📍 Cara Menggunakan:</h3>
+                <h3>{$t("instructions.title")}</h3>
                 <ol>
-                    <li>Pilih jenis bom dari dropdown di atas</li>
-                    <li>
-                        Cari lokasi dengan search box atau klik langsung pada
-                        peta
-                    </li>
-                    <li>Lihat animasi dan data prediksi dampak</li>
-                    <li>Aktifkan Comparison Mode untuk membandingkan 2 bom</li>
+                    <li>{$t("instructions.step1")}</li>
+                    <li>{$t("instructions.step2")}</li>
+                    <li>{$t("instructions.step3")}</li>
+                    <li>{$t("instructions.step4")}</li>
                 </ol>
             </div>
         </div>
@@ -94,13 +87,10 @@
 
         <footer class="footer">
             <p>
-                💡 <strong>Atomic Range Prediction</strong> - Eksplorasi dampak bom
-                atom dengan peta interaktif dan animasi modern!
+                💡 <strong>{$t("app.title")}</strong> - {$t("app.footerNote")}
             </p>
             <p class="disclaimer">
-                ⚠️ Data simulasi ini hanya untuk tujuan edukasi. Formula yang
-                digunakan adalah pendekatan sederhana dan bukan perhitungan
-                militer yang sebenarnya.
+                ⚠️ {$t("app.disclaimer")}
             </p>
         </footer>
     </main>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { selectedBomb, useRealTimeWeather } from "$lib/stores/appStore";
     import { BOMB_TYPES } from "$lib/utils/constants";
+    import { t, locale } from "$lib/i18n";
     import type { BombType } from "$lib/types";
 
     let isOpen = false;
@@ -26,7 +27,7 @@
 <svelte:window on:click={handleClickOutside} />
 
 <div class="bomb-selector">
-    <label for="bomb-select">Pilih Jenis Bom:</label>
+    <label for="bomb-select">{$t("bomb.select")}:</label>
     <div class="select-wrapper">
         <button
             class="select-button"
@@ -36,7 +37,9 @@
             <span class="selected-value">
                 <strong>{$selectedBomb.name}</strong>
                 <span class="yield"
-                    >({$selectedBomb.yieldKt.toLocaleString("id-ID")} kt)</span
+                    >({$selectedBomb.yieldKt.toLocaleString(
+                        $locale === "id" ? "id-ID" : "en-US",
+                    )} kt)</span
                 >
             </span>
             <svg
@@ -65,7 +68,9 @@
                         <div class="bomb-info">
                             <div class="bomb-name">{bomb.name}</div>
                             <div class="bomb-yield">
-                                {bomb.yieldKt.toLocaleString("id-ID")} kiloton
+                                {bomb.yieldKt.toLocaleString(
+                                    $locale === "id" ? "id-ID" : "en-US",
+                                )} kt
                             </div>
                             {#if bomb.description}
                                 <div class="bomb-description">
@@ -99,10 +104,8 @@
             <span class="slider round"></span>
         </label>
         <div class="weather-info">
-            <span class="weather-label">Gunakan Cuaca Real-time</span>
-            <span class="weather-desc"
-                >Menyesuaikan fallout dengan arah angin aktual (Mock Data)</span
-            >
+            <span class="weather-label">{$t("bomb.useRealWeather")}</span>
+            <span class="weather-desc">{$t("bomb.weatherDesc")}</span>
         </div>
     </div>
 </div>

@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { driver } from "driver.js";
     import { tutorialSteps, tutorialConfig } from "$lib/utils/tutorialSteps";
+    import { t } from "$lib/i18n";
     import "driver.js/dist/driver.css";
 
     let hasSeenTutorial = $state(false);
@@ -50,12 +51,12 @@
 <button
     class="tutorial-btn"
     onclick={startTutorial}
-    title="Show Tutorial"
-    aria-label="Show interactive tutorial"
+    title={$t("tutorial.ready")}
+    aria-label={$t("tutorial.ready")}
 >
     <span class="icon">❓</span>
     {#if showNewBadge}
-        <span class="badge">Baru</span>
+        <span class="badge">{$t("tutorial.new")}</span>
     {/if}
 </button>
 

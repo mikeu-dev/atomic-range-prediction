@@ -11,31 +11,32 @@
     } from "$lib/utils/constants";
     import { getPopulationDensityInfo } from "$lib/utils/populationData";
     import { getWindDirectionName } from "$lib/utils/windEffects";
-
-    let copySuccess = false;
+    import { t, locale } from "$lib/i18n";
+    import { toasts } from "$lib/stores/toastStore";
 
     function copyToClipboard() {
         if (!$currentBlastData) return;
 
-        const text = `
-Atomic Range Prediction - Data Simulasi
+        const dateStr = new Date().toLocaleString(
+            $locale === "id" ? "id-ID" : "en-US",
+        );
 
-Wilayah: ${$currentBlastData.countryName}
-Zona Fireball: ${$currentBlastData.blastData.fireball} km
-Zona Radiasi: ${$currentBlastData.blastData.radiation} km
-Heavy Blast (20 psi): ${$currentBlastData.blastData.heavyBlast} km
-Moderate Blast (5 psi): ${$currentBlastData.blastData.moderateBlast} km
-Light Blast (1 psi): ${$currentBlastData.blastData.lightBlast} km
-Zona Thermal: ${$currentBlastData.blastData.thermal} km
-Populasi Terdampak: ${formatNumber($currentBlastData.population)} orang
-Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
-		`.trim();
+        const text = `
+${$t("app.title")} - ${$t("blastInfo.title")} (${dateStr})
+
+${$t("blastInfo.targetArea")}: ${$currentBlastData.countryName}
+${$t("blastInfo.fireball")}: ${$currentBlastData.blastData.fireball} km
+${$t("blastInfo.radiation")}: ${$currentBlastData.blastData.radiation} km
+${$t("blastInfo.heavyBlast")}: ${$currentBlastData.blastData.heavyBlast} km
+${$t("blastInfo.moderateBlast")}: ${$currentBlastData.blastData.moderateBlast} km
+${$t("blastInfo.lightBlast")}: ${$currentBlastData.blastData.lightBlast} km
+${$t("blastInfo.thermal")}: ${$currentBlastData.blastData.thermal} km
+${$t("blastInfo.affectedPopulation")}: ${formatNumber($currentBlastData.population)}
+${$t("blastInfo.infraDamage")}: ${$currentBlastData.infrastructure}%
+        `.trim();
 
         navigator.clipboard.writeText(text).then(() => {
-            copySuccess = true;
-            setTimeout(() => {
-                copySuccess = false;
-            }, 2000);
+            toasts.success($t("export.linkCopied"));
         });
     }
 </script>
@@ -43,49 +44,34 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
 {#if $currentBlastData}
     <div class="blast-info card fade-in">
         <div class="header">
-            <h2>Data Simulasi</h2>
+            <h2>{$t("blastInfo.title")}</h2>
             <button
                 class="copy-btn"
                 on:click={copyToClipboard}
-                title="Salin ke clipboard"
+                title={$t("blastInfo.copyToClipboard")}
             >
-                {#if copySuccess}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Tersalin!</span>
-                {:else}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                    >
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"
-                        ></rect>
-                        <path
-                            d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-                        ></path>
-                    </svg>
-                    <span>Salin</span>
-                {/if}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"
+                    ></rect>
+                    <path
+                        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                    ></path>
+                </svg>
+                <span>{$t("blastInfo.copyToClipboard")}</span>
             </button>
         </div>
 
         <!-- Wilayah Info -->
         <div class="country-info">
-            <h3>Wilayah Target</h3>
+            <h3>{$t("blastInfo.targetArea")}</h3>
             <p class="country-name">{$currentBlastData.countryName}</p>
 
             <!-- Population Density Info -->
@@ -98,9 +84,12 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                 <div class="density-badge">
                     <span class="density-icon">📊</span>
                     <div class="density-text">
-                        <span class="density-label">Kepadatan Populasi:</span>
+                        <span class="density-label"
+                            >{$t("blastInfo.populationDensity")}</span
+                        >
                         <span class="density-value"
-                            >{formatNumber(densityInfo.density)} orang/km²</span
+                            >{formatNumber(densityInfo.density)}
+                            {$locale === "id" ? "orang" : "people"}/km²</span
                         >
                         <span class="density-source">({densityInfo.name})</span>
                     </div>
@@ -113,12 +102,14 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
             <div class="weather-card">
                 <div class="weather-header">
                     <span class="weather-icon">🌬️</span>
-                    <h3>Cuaca & Fallout</h3>
+                    <h3>{$t("blastInfo.weatherAlt")}</h3>
                 </div>
                 {#if $currentBlastData.wind}
                     <div class="weather-grid">
                         <div class="weather-item">
-                            <span class="w-label">Arah Angin</span>
+                            <span class="w-label"
+                                >{$t("blastInfo.windDirection")}</span
+                            >
                             <span class="w-value">
                                 {getWindDirectionName(
                                     $currentBlastData.wind.direction,
@@ -127,29 +118,33 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                             </span>
                         </div>
                         <div class="weather-item">
-                            <span class="w-label">Kecepatan</span>
+                            <span class="w-label"
+                                >{$t("blastInfo.windSpeed")}</span
+                            >
                             <span class="w-value"
                                 >{$currentBlastData.wind.speed} km/jam</span
                             >
                         </div>
                         <div class="weather-item">
-                            <span class="w-label">Sumber</span>
+                            <span class="w-label"
+                                >{$t("blastInfo.windSource")}</span
+                            >
                             <span class="w-value"
                                 >{$currentBlastData.wind.isRealTime
-                                    ? "📡 Real-time"
-                                    : "🎲 Simulasi"}</span
+                                    ? $t("blastInfo.windRealTime")
+                                    : $t("blastInfo.windSimulated")}</span
                             >
                         </div>
                     </div>
                 {:else}
-                    <p class="no-data">Data cuaca tidak tersedia</p>
+                    <p class="no-data">{$t("blastInfo.noWeatherData")}</p>
                 {/if}
 
                 {#if $currentBlastData.falloutPattern}
                     <div class="fallout-info">
                         <div class="fallout-meter">
                             <span class="w-label"
-                                >Intensitas Radiasi Fallout</span
+                                >{$t("blastInfo.falloutIntensity")}</span
                             >
                             <div class="progress-bar fallout">
                                 <div
@@ -167,14 +162,20 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                             </div>
                         </div>
                         <p class="fallout-desc">
-                            Radiasi menyebar sejauh <strong
-                                >{$currentBlastData.falloutPattern.length.toFixed(
-                                    1,
-                                )} km</strong
-                            >
-                            ke arah {getWindDirectionName(
-                                $currentBlastData.falloutPattern.windDirection,
-                            )}.
+                            {@html $t("blastInfo.falloutDesc")
+                                .replace(
+                                    "{distance}",
+                                    $currentBlastData.falloutPattern.length.toFixed(
+                                        1,
+                                    ),
+                                )
+                                .replace(
+                                    "{direction}",
+                                    getWindDirectionName(
+                                        $currentBlastData.falloutPattern
+                                            .windDirection,
+                                    ),
+                                )}
                         </p>
                     </div>
                 {/if}
@@ -183,7 +184,7 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
 
         <!-- Mini Visualisasi Blast Zones -->
         <div class="blast-zones-visual">
-            <h3>Zona Ledakan</h3>
+            <h3>{$t("blastInfo.blastZones")}</h3>
             <div class="zones-container">
                 <div
                     class="zone-circle thermal"
@@ -214,28 +215,33 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
 
         <!-- Detail Zona -->
         <div class="zones-detail">
-            <h3>Detail Zona Dampak</h3>
+            <h3>{$t("blastInfo.blastZones")} Detail</h3>
 
+            <!-- Fireball -->
             <div
                 class="zone-item"
                 style="border-left-color: {BLAST_ZONE_COLORS.fireball}"
             >
                 <div class="zone-header">
                     <span class="icon">🔥</span>
-                    <span class="zone-name">Fireball</span>
+                    <span class="zone-name">{$t("blastInfo.fireball")}</span>
                     <span class="zone-radius"
                         >{$currentBlastData.blastData.fireball} km</span
                     >
                 </div>
                 <div class="zone-stats">
                     <div class="stat">
-                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.pressure")}</span
+                        >
                         <span class="stat-value"
                             >{calculateOverpressure("fireball")} psi</span
                         >
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Korban:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.casualties")}</span
+                        >
                         <span class="stat-value"
                             >{formatNumber(
                                 estimateCasualtiesByZone(
@@ -247,17 +253,20 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                     </div>
                 </div>
                 <p class="zone-desc">
-                    Zona inti dengan suhu jutaan derajat - vaporisasi total
+                    {$locale === "id"
+                        ? "Zona inti dengan suhu jutaan derajat - vaporisasi total"
+                        : "Central zone with millions of degrees - total vaporization"}
                 </p>
             </div>
 
+            <!-- Radiation -->
             <div
                 class="zone-item"
                 style="border-left-color: {BLAST_ZONE_COLORS.radiation}"
             >
                 <div class="zone-header">
                     <span class="icon">☢️</span>
-                    <span class="zone-name">Radiasi Fatal</span>
+                    <span class="zone-name">{$t("blastInfo.radiation")}</span>
                     <span class="zone-radius"
                         >{$currentBlastData.blastData.radiation} km</span
                     >
@@ -268,7 +277,9 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                         <span class="stat-value">500+ rem</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Korban:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.casualties")}</span
+                        >
                         <span class="stat-value"
                             >{formatNumber(
                                 estimateCasualtiesByZone(
@@ -280,28 +291,35 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                     </div>
                 </div>
                 <p class="zone-desc">
-                    Radiasi langsung mematikan dalam hitungan jam
+                    {$locale === "id"
+                        ? "Radiasi langsung mematikan dalam hitungan jam"
+                        : "Immediate lethal radiation within hours"}
                 </p>
             </div>
 
+            <!-- Heavy Blast -->
             <div
                 class="zone-item"
                 style="border-left-color: {BLAST_ZONE_COLORS.heavyBlast}"
             >
                 <div class="zone-header">
                     <span class="icon">💥</span>
-                    <span class="zone-name">Heavy Blast</span>
+                    <span class="zone-name">{$t("blastInfo.heavyBlast")}</span>
                     <span class="zone-radius"
                         >{$currentBlastData.blastData.heavyBlast} km</span
                     >
                 </div>
                 <div class="zone-stats">
                     <div class="stat">
-                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.pressure")}</span
+                        >
                         <span class="stat-value">20 psi</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Korban:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.casualties")}</span
+                        >
                         <span class="stat-value"
                             >{formatNumber(
                                 estimateCasualtiesByZone(
@@ -312,27 +330,38 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                         >
                     </div>
                 </div>
-                <p class="zone-desc">Kehancuran total bangunan bertingkat</p>
+                <p class="zone-desc">
+                    {$locale === "id"
+                        ? "Kehancuran total bangunan bertingkat"
+                        : "Total destruction of multi-story buildings"}
+                </p>
             </div>
 
+            <!-- Moderate Blast -->
             <div
                 class="zone-item"
                 style="border-left-color: {BLAST_ZONE_COLORS.moderateBlast}"
             >
                 <div class="zone-header">
                     <span class="icon">🏚️</span>
-                    <span class="zone-name">Moderate Blast</span>
+                    <span class="zone-name"
+                        >{$t("blastInfo.moderateBlast")}</span
+                    >
                     <span class="zone-radius"
                         >{$currentBlastData.blastData.moderateBlast} km</span
                     >
                 </div>
                 <div class="zone-stats">
                     <div class="stat">
-                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.pressure")}</span
+                        >
                         <span class="stat-value">5 psi</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Korban:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.casualties")}</span
+                        >
                         <span class="stat-value"
                             >{formatNumber(
                                 estimateCasualtiesByZone(
@@ -344,28 +373,35 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                     </div>
                 </div>
                 <p class="zone-desc">
-                    Kerusakan parah pada bangunan residensial
+                    {$locale === "id"
+                        ? "Kerusakan parah pada bangunan residensial"
+                        : "Severe damage to residential buildings"}
                 </p>
             </div>
 
+            <!-- Light Blast -->
             <div
                 class="zone-item"
                 style="border-left-color: {BLAST_ZONE_COLORS.lightBlast}"
             >
                 <div class="zone-header">
                     <span class="icon">🏢</span>
-                    <span class="zone-name">Light Blast</span>
+                    <span class="zone-name">{$t("blastInfo.lightBlast")}</span>
                     <span class="zone-radius"
                         >{$currentBlastData.blastData.lightBlast} km</span
                     >
                 </div>
                 <div class="zone-stats">
                     <div class="stat">
-                        <span class="stat-label">Tekanan:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.pressure")}</span
+                        >
                         <span class="stat-value">1 psi</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Korban:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.casualties")}</span
+                        >
                         <span class="stat-value"
                             >{formatNumber(
                                 estimateCasualtiesByZone(
@@ -377,28 +413,35 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                     </div>
                 </div>
                 <p class="zone-desc">
-                    Jendela pecah, kerusakan struktural ringan
+                    {$locale === "id"
+                        ? "Jendela pecah, kerusakan struktural ringan"
+                        : "Broken windows, light structural damage"}
                 </p>
             </div>
 
+            <!-- Thermal -->
             <div
                 class="zone-item"
                 style="border-left-color: {BLAST_ZONE_COLORS.thermal}"
             >
                 <div class="zone-header">
                     <span class="icon">🌡️</span>
-                    <span class="zone-name">Thermal Radiation</span>
+                    <span class="zone-name">{$t("blastInfo.thermal")}</span>
                     <span class="zone-radius"
                         >{$currentBlastData.blastData.thermal} km</span
                     >
                 </div>
                 <div class="zone-stats">
                     <div class="stat">
-                        <span class="stat-label">Intensitas:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.intensity")}</span
+                        >
                         <span class="stat-value">100 cal/cm²</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Korban:</span>
+                        <span class="stat-label"
+                            >{$t("blastInfo.casualties")}</span
+                        >
                         <span class="stat-value"
                             >{formatNumber(
                                 estimateCasualtiesByZone(
@@ -409,7 +452,11 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                         >
                     </div>
                 </div>
-                <p class="zone-desc">Luka bakar tingkat 3, kebakaran massal</p>
+                <p class="zone-desc">
+                    {$locale === "id"
+                        ? "Luka bakar tingkat 3, kebakaran massal"
+                        : "3rd degree burns, mass fires"}
+                </p>
             </div>
         </div>
 
@@ -418,9 +465,11 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
             <div class="summary-item main-stat">
                 <span class="icon">☠️</span>
                 <div>
-                    <p class="summary-label">Estimasi Korban Jiwa</p>
+                    <p class="summary-label">
+                        {$t("blastInfo.totalCasualties")}
+                    </p>
                     <p class="summary-value fatalities">
-                        {formatNumber($currentBlastData.fatalities)} orang
+                        {formatNumber($currentBlastData.fatalities)}
                     </p>
                 </div>
             </div>
@@ -428,9 +477,9 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
             <div class="summary-item secondary-stat">
                 <span class="icon">🏥</span>
                 <div>
-                    <p class="summary-label">Estimasi Korban Luka</p>
+                    <p class="summary-label">{$t("blastInfo.totalInjuries")}</p>
                     <p class="summary-value injuries">
-                        {formatNumber($currentBlastData.injuries)} orang
+                        {formatNumber($currentBlastData.injuries)}
                     </p>
                 </div>
             </div>
@@ -438,9 +487,11 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
             <div class="summary-item">
                 <span class="icon">👥</span>
                 <div>
-                    <p class="summary-label">Populasi Terdampak</p>
+                    <p class="summary-label">
+                        {$t("blastInfo.affectedPopulation")}
+                    </p>
                     <p class="summary-value">
-                        {formatNumber($currentBlastData.population)} orang
+                        {formatNumber($currentBlastData.population)}
                     </p>
                 </div>
             </div>
@@ -448,7 +499,7 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
             <div class="summary-item">
                 <span class="icon">🏗️</span>
                 <div>
-                    <p class="summary-label">Kerusakan Infrastruktur</p>
+                    <p class="summary-label">{$t("blastInfo.infraDamage")}</p>
                     <div class="progress-bar">
                         <div
                             class="progress-fill"

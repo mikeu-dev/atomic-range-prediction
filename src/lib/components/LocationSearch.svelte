@@ -1,7 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import { t } from "$lib/i18n";
 
-    export let placeholder = "Cari lokasi (kota, negara, koordinat)...";
+    export let placeholder = $t("search.placeholder");
 
     const dispatch = createEventDispatcher<{
         select: { lat: number; lon: number; name: string };
@@ -131,7 +132,7 @@
                     searchResults = [];
                     showResults = false;
                 }}
-                title="Hapus"
+                title={$t("search.clear")}
             >
                 ×
             </button>

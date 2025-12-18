@@ -17,11 +17,13 @@
         "fatMan": "Fat Man",
         "fatManDesc": "Bom Nagasaki, 21kt",
         "castleBravo": "Castle Bravo",
-        "castleBravoDesc": "Uji coba thermonuklir AS, 15,000kt",
+        "castleBravoDesc": "Uji coba thermonuklir AS, 15.000kt",
         "tsarBomba": "Tsar Bomba",
-        "tsarBombaDesc": "Bom terbesar yang pernah diuji, 50,000kt",
+        "tsarBombaDesc": "Bom terbesar yang pernah diuji, 50.000kt",
         "b83": "B83",
-        "b83Desc": "Bom strategis AS, 1,200kt"
+        "b83Desc": "Bom strategis AS, 1.200kt",
+        "useRealWeather": "Gunakan Cuaca Real-time",
+        "weatherDesc": "Menyesuaikan fallout dengan arah angin aktual (Mock Data)"
     },
     "comparison": {
         "mode": "Mode Perbandingan",
@@ -29,9 +31,10 @@
         "validation": "Harap pilih tepat 2 bom"
     },
     "search": {
-        "placeholder": "Cari kota atau negara...",
-        "noResults": "Tidak ada hasil",
-        "searching": "Mencari..."
+        "placeholder": "Cari lokasi (kota, negara, koordinat)...",
+        "noResults": "Tidak ada hasil ditemukan",
+        "searching": "Mencari...",
+        "clear": "Hapus"
     },
     "export": {
         "title": "Export & Share",
@@ -40,13 +43,19 @@
         "exportJSON": "Export JSON",
         "exportCSV": "Export CSV",
         "shareLink": "Salin Link Berbagi",
-        "linkCopied": "Link Tersalin!"
+        "linkCopied": "Link Tersalin!",
+        "exporting": "Mengekspor...",
+        "noData": "Tidak ada data untuk diekspor",
+        "jsonSuccess": "JSON berhasil diekspor",
+        "csvSuccess": "CSV berhasil diekspor",
+        "failed": "Ekspor gagal",
+        "shareFailed": "Gagal menyalin link"
     },
     "tutorial": {
         "welcome": "Selamat Datang!",
         "welcomeDesc": "Selamat datang di <strong>Atomic Range Prediction</strong> - simulator interaktif untuk mempelajari dampak bom atom. Mari saya tunjukkan cara menggunakannya!",
         "bombSelector": "Pilih Bom",
-        "bombSelectorDesc": "Pilih jenis bom dari dropdown ini. Tersedia berbagai tipe dari <strong>Little Boy</strong> (15kt) hingga <strong>Tsar Bomba</strong> (50,000kt)!",
+        "bombSelectorDesc": "Pilih jenis bom dari dropdown ini. Tersedia berbagai tipe dari <strong>Little Boy</strong> (15kt) hingga <strong>Tsar Bomba</strong> (50.000kt)!",
         "comparisonMode": "Mode Perbandingan",
         "comparisonModeDesc": "Aktifkan <strong>Comparison Mode</strong> untuk membandingkan 2 bom secara side-by-side. Lihat perbedaan dampak dengan jelas!",
         "locationSearch": "Cari Lokasi",
@@ -60,7 +69,8 @@
         "history": "Riwayat Simulasi",
         "historyDesc": "Semua simulasi Anda tersimpan di sini (maksimal 10 terakhir). Klik untuk melihat detail atau hapus jika tidak diperlukan.",
         "ready": "Siap Menjelajah!",
-        "readyDesc": "Anda sudah siap menggunakan aplikasi! <br><br>Mulai dengan <strong>memilih bom</strong>, lalu <strong>klik negara di peta</strong>. Tutorial ini bisa diulang kapan saja dengan klik tombol Help (❓) di header."
+        "readyDesc": "Anda sudah siap menggunakan aplikasi! <br><br>Mulai dengan <strong>memilih bom</strong>, lalu <strong>klik negara di peta</strong>. Tutorial ini bisa diulang kapan saja dengan klik tombol Help (❓) di header.",
+        "new": "Baru"
     },
     "blastInfo": {
         "title": "Data Simulasi",
@@ -74,7 +84,32 @@
         "heavyBlast": "Ledakan Berat (20 psi)",
         "moderateBlast": "Ledakan Sedang (5 psi)",
         "lightBlast": "Ledakan Ringan (1 psi)",
-        "thermal": "Radiasi Termal"
+        "thermal": "Radiasi Termal",
+        "weatherAlt": "Cuaca & Fallout",
+        "windDirection": "Arah Angin",
+        "windSpeed": "Kecepatan",
+        "windSource": "Sumber",
+        "windRealTime": "📡 Real-time",
+        "windSimulated": "🎲 Simulasi",
+        "falloutIntensity": "Intensitas Radiasi Fallout",
+        "falloutDesc": "Radiasi menyebar sejauh <strong>{distance} km</strong> ke arah {direction}.",
+        "pressure": "Tekanan:",
+        "casualties": "Korban:",
+        "intensity": "Intensitas:",
+        "totalCasualties": "Estimasi Korban Jiwa",
+        "totalInjuries": "Estimasi Korban Luka",
+        "affectedPopulation": "Populasi Terdampak",
+        "infraDamage": "Kerusakan Infrastruktur",
+        "copyToClipboard": "Salin ke clipboard",
+        "noWeatherData": "Data cuaca tidak tersedia"
+    },
+    "map": {
+        "peta": "Peta",
+        "globe": "Globe",
+        "flat": "Datar",
+        "loading": "Memuat peta dunia...",
+        "invalidCoords": "Koordinat tidak valid. Silakan pilih lokasi lain.",
+        "unknown": "Tidak diketahui"
     },
     "comparisonPanel": {
         "title": "Analisis Perbandingan",
@@ -87,11 +122,36 @@
     "history": {
         "title": "Riwayat Simulasi",
         "empty": "Belum ada riwayat simulasi",
-        "emptyDesc": "Klik peta untuk memulai simulasi",
+        "emptyDesc": "Klik pada peta untuk memulai simulasi",
         "clear": "Hapus Semua",
-        "delete": "Hapus"
+        "delete": "Hapus",
+        "confirmClear": "Hapus semua riwayat simulasi?"
     },
     "footer": {
-        "disclaimer": "⚠️ Data simulasi ini hanya untuk tujuan edukasi. Formula yang digunakan adalah pendekatan sederhana dan bukan perhitungan militer yang sebenarnya."
+        "disclaimer": "⚠️ Data simulasi ini hanya untuk tujuan edukasi. Formula yang digunakan adalah pendekatan sederhana dan bukan perhitungan militer yang sebenarnya.",
+        "tagline": "Eksplorasi dampak bom atom dengan peta interaktif dan animasi modern!",
+        "footerNote": "Eksplorasi dampak bom atom dengan peta interaktif dan animasi modern!"
+    },
+    "timeline": {
+        "title": "Timeline Playback",
+        "detonation": "Ledakan",
+        "shockwave": "Gelombang Kejut",
+        "thermal": "Termal",
+        "fallout": "Fallout",
+        "replay": "Ulangi"
+    },
+    "historical": {
+        "history": "Riwayat",
+        "title": "Peristiwa Nuklir Bersejarah",
+        "warfare": "Perang (Perang Dunia II)",
+        "tests": "Uji Coba Nuklir",
+        "immediateDeaths": "Kematian Langsung",
+        "totalDeaths": "Total Kematian",
+        "simulate": "Simulasikan Peristiwa Ini"
+    },
+    "educational": {
+        "learn": "Belajar",
+        "title": "Sumber Edukasi",
+        "back": "Kembali ke Topik"
     }
 }

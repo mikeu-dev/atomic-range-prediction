@@ -1,6 +1,7 @@
 <script lang="ts">
     import { comparisonMode, comparisonBombs } from "$lib/stores/appStore";
     import { BOMB_TYPES } from "$lib/utils/constants";
+    import { t } from "$lib/i18n";
 
     let selectedBombIds: string[] = [];
 
@@ -30,12 +31,12 @@
         on:click={toggleComparison}
     >
         <span class="toggle-icon">{$comparisonMode ? "✅" : "⚪"}</span>
-        <span class="toggle-text">Comparison Mode</span>
+        <span class="toggle-text">{$t("comparison.mode")}</span>
     </button>
 
     {#if $comparisonMode}
         <div class="bomb-selector">
-            <p class="selector-label">Select 2 bombs to compare:</p>
+            <p class="selector-label">{$t("comparison.selectLabel")}</p>
             <div class="bomb-grid">
                 {#each BOMB_TYPES as bomb}
                     <label class="bomb-checkbox">
@@ -47,7 +48,7 @@
                                 selectedBombIds.length >= 2}
                         />
                         <span class="bomb-name">
-                            {bomb.name}
+                            {$t(`bomb.${bomb.id}`)}
                             <span class="bomb-yield">({bomb.yieldKt}kt)</span>
                         </span>
                     </label>
@@ -56,7 +57,7 @@
 
             {#if !isValid}
                 <p class="validation-message">
-                    ⚠️ Please select exactly 2 bombs
+                    {$t("comparison.validation")}
                 </p>
             {/if}
         </div>

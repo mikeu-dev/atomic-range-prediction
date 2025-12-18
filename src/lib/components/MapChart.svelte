@@ -35,6 +35,9 @@
         validateCountryName,
         ValidationError,
     } from "$lib/utils/validation";
+    import { t, getLocale } from "$lib/i18n";
+    import { toasts } from "$lib/stores/toastStore";
+    import { get } from "svelte/store";
 
     export let mapId = "chartdiv";
 
@@ -96,7 +99,7 @@
         cont.children.push(
             am5.Label.new(root, {
                 centerY: am5.p50,
-                text: "Peta",
+                text: get(t)("map.peta"),
             }),
         );
 
@@ -139,7 +142,7 @@
         cont.children.push(
             am5.Label.new(root, {
                 centerY: am5.p50,
-                text: "Globe",
+                text: get(t)("map.globe"),
             }),
         );
 
@@ -196,9 +199,9 @@
             });
         }
 
-        createButton("2D", am5map.geoMercator());
-        createButton("Flat", am5map.geoNaturalEarth1());
-        createButton("Globe", am5map.geoOrthographic(), true);
+        createButton(get(t)("map.peta"), am5map.geoMercator());
+        createButton(get(t)("map.flat"), am5map.geoNaturalEarth1());
+        createButton(get(t)("map.globe"), am5map.geoOrthographic(), true);
 
         // Create polygon series (countries)
         polygonSeries = chart.series.push(
@@ -362,7 +365,7 @@
         );
 
         fireballSeries = createZoneSeries(
-            "Fireball",
+            get(t)("blastInfo.fireball"),
             BLAST_ZONE_COLORS.fireball,
             BLAST_ZONE_OPACITY.fireball,
             ANIMATION.duration.fireball,
@@ -415,7 +418,7 @@
             function (ev: any) {
                 const dataItem: any = ev.target.dataItem;
                 const countryName =
-                    dataItem.dataContext.name || "Tidak diketahui";
+                    dataItem.dataContext.name || get(t)("map.unknown");
 
                 // Get centroid coordinates
                 // amCharts polygon geometry might not have direct centroid
@@ -494,7 +497,7 @@
                         latitude,
                         longitude,
                     });
-                    alert("Koordinat tidak valid. Silakan pilih lokasi lain.");
+                    toasts.error($t("map.invalidCoords"));
                     return;
                 }
 
@@ -505,7 +508,7 @@
                         "Invalid country name:",
                         countryValidation.error,
                     );
-                    alert(countryValidation.error);
+                    toasts.error(countryValidation.error || "Unknown Error");
                     return;
                 }
                 const sanitizedCountryName = countryValidation.value;
@@ -656,7 +659,7 @@
                 fill: am5Core.color(FALLOUT_COLORS.low),
                 fillOpacity: FALLOUT_OPACITY.low,
             },
-            tooltipText: `Fallout Zone (Low Intensity)\nArah Angin: ${windDirectionName}\nKecepatan: ${wind.speed} km/jam`,
+            tooltipText: `${get(t)("timeline.fallout")} (${get(t)("blastInfo.intensity")} Low)\n${get(t)("blastInfo.windDirection")}: ${windDirectionName}\n${get(t)("blastInfo.windSpeed")}: ${wind.speed} km/jam`,
         });
 
         // Medium intensity fallout (middle layer)
@@ -667,7 +670,7 @@
                 fill: am5Core.color(FALLOUT_COLORS.medium),
                 fillOpacity: FALLOUT_OPACITY.medium,
             },
-            tooltipText: `Fallout Zone (Medium Intensity)`,
+            tooltipText: `${get(t)("timeline.fallout")} (${get(t)("blastInfo.intensity")} Medium)`,
         });
 
         // High intensity fallout (inner layer)
@@ -678,7 +681,7 @@
                 fill: am5Core.color(FALLOUT_COLORS.high),
                 fillOpacity: FALLOUT_OPACITY.high,
             },
-            tooltipText: `Fallout Zone (High Intensity)`,
+            tooltipText: `${get(t)("timeline.fallout")} (${get(t)("blastInfo.intensity")} High)`,
         });
 
         currentBlastData.set({
@@ -797,14 +800,14 @@
     {#if isLoading}
         <div class="loading-overlay">
             <div class="spinner"></div>
-            <p>Memuat peta dunia...</p>
+            <p>{$t("map.loading")}</p>
         </div>
     {/if}
 
     {#if isCalculating}
         <div class="calculating-indicator">
             <div class="calculating-spinner"></div>
-            <span>Menghitung dampak ledakan...</span>
+            <span>{$t("blastInfo.title")}...</span>
         </div>
     {/if}
 

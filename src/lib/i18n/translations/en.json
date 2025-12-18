@@ -21,7 +21,9 @@
         "tsarBomba": "Tsar Bomba",
         "tsarBombaDesc": "Largest bomb ever tested, 50,000kt",
         "b83": "B83",
-        "b83Desc": "US strategic bomb, 1,200kt"
+        "b83Desc": "US strategic bomb, 1,200kt",
+        "useRealWeather": "Use Real-time Weather",
+        "weatherDesc": "Adjust fallout with actual wind direction (Mock Data)"
     },
     "comparison": {
         "mode": "Comparison Mode",
@@ -29,9 +31,10 @@
         "validation": "Please select exactly 2 bombs"
     },
     "search": {
-        "placeholder": "Search city or country...",
+        "placeholder": "Search location (city, country, coordinates)...",
         "noResults": "No results found",
-        "searching": "Searching..."
+        "searching": "Searching...",
+        "clear": "Clear"
     },
     "export": {
         "title": "Export & Share",
@@ -40,7 +43,13 @@
         "exportJSON": "Export JSON",
         "exportCSV": "Export CSV",
         "shareLink": "Copy Share Link",
-        "linkCopied": "Link Copied!"
+        "linkCopied": "Link Copied!",
+        "exporting": "Exporting...",
+        "noData": "No data to export",
+        "jsonSuccess": "JSON exported successfully",
+        "csvSuccess": "CSV exported successfully",
+        "failed": "Export failed",
+        "shareFailed": "Failed to copy link"
     },
     "tutorial": {
         "welcome": "Welcome!",
@@ -60,7 +69,8 @@
         "history": "Simulation History",
         "historyDesc": "All your simulations are saved here (max 10 latest). Click to view details or delete if not needed.",
         "ready": "Ready to Explore!",
-        "readyDesc": "You're ready to use the app! <br><br>Start by <strong>selecting a bomb</strong>, then <strong>click a country on the map</strong>. This tutorial can be repeated anytime by clicking the Help button (❓) in the header."
+        "readyDesc": "You're ready to use the app! <br><br>Start by <strong>selecting a bomb</strong>, then <strong>click a country on the map</strong>. This tutorial can be repeated anytime by clicking the Help button (❓) in the header.",
+        "new": "New"
     },
     "blastInfo": {
         "title": "Simulation Data",
@@ -74,7 +84,32 @@
         "heavyBlast": "Heavy Blast (20 psi)",
         "moderateBlast": "Moderate Blast (5 psi)",
         "lightBlast": "Light Blast (1 psi)",
-        "thermal": "Thermal Radiation"
+        "thermal": "Thermal Radiation",
+        "weatherAlt": "Weather & Fallout",
+        "windDirection": "Wind Direction",
+        "windSpeed": "Speed",
+        "windSource": "Source",
+        "windRealTime": "📡 Real-time",
+        "windSimulated": "🎲 Simulated",
+        "falloutIntensity": "Fallout Radiation Intensity",
+        "falloutDesc": "Radiation spreads as far as <strong>{distance} km</strong> towards {direction}.",
+        "pressure": "Pressure:",
+        "casualties": "Casualties:",
+        "intensity": "Intensity:",
+        "totalCasualties": "Estimated Fatalities",
+        "totalInjuries": "Estimated Injuries",
+        "affectedPopulation": "Affected Population",
+        "infraDamage": "Infrastructure Damage",
+        "copyToClipboard": "Copy to clipboard",
+        "noWeatherData": "Weather data not available"
+    },
+    "map": {
+        "peta": "Map",
+        "globe": "Globe",
+        "flat": "Flat",
+        "loading": "Loading world map...",
+        "invalidCoords": "Invalid coordinates. Please select another location.",
+        "unknown": "Unknown"
     },
     "comparisonPanel": {
         "title": "Comparison Analysis",
@@ -89,9 +124,34 @@
         "empty": "No simulation history yet",
         "emptyDesc": "Click on the map to start a simulation",
         "clear": "Clear All",
-        "delete": "Delete"
+        "delete": "Delete",
+        "confirmClear": "Clear all simulation history?"
     },
     "footer": {
-        "disclaimer": "⚠️ This simulation data is for educational purposes only. The formulas used are simple approximations and not actual military calculations."
+        "disclaimer": "⚠️ This simulation data is for educational purposes only. The formulas used are simple approximations and not actual military calculations.",
+        "tagline": "Explore nuclear bomb impact with interactive map and modern animations!",
+        "footerNote": "Explore nuclear bomb impact with interactive map and modern animations!"
+    },
+    "timeline": {
+        "title": "Timeline Playback",
+        "detonation": "Detonation",
+        "shockwave": "Shockwave",
+        "thermal": "Thermal",
+        "fallout": "Fallout",
+        "replay": "Replay"
+    },
+    "historical": {
+        "history": "History",
+        "title": "Historical Nuclear Events",
+        "warfare": "Warfare (World War II)",
+        "tests": "Nuclear Tests",
+        "immediateDeaths": "Immediate Deaths",
+        "totalDeaths": "Total Deaths",
+        "simulate": "Simulate This Event"
+    },
+    "educational": {
+        "learn": "Learn",
+        "title": "Educational Resources",
+        "back": "Back to Topics"
     }
 }

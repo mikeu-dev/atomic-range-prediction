@@ -5,11 +5,24 @@
         removeBlastFromHistory,
     } from "$lib/stores/appStore";
     import { formatNumber } from "$lib/utils/blastCalculator";
+    import { t, locale } from "$lib/i18n";
+    import { toasts } from "$lib/stores/toastStore";
+
+    let confirmClear = false;
 
     function handleClearAll() {
-        if (confirm("Hapus semua riwayat simulasi?")) {
-            clearBlastHistory();
+        if (!confirmClear) {
+            confirmClear = true;
+            // Auto-reset confirm state after 3 seconds
+            setTimeout(() => {
+                confirmClear = false;
+            }, 3000);
+            return;
         }
+
+        clearBlastHistory();
+        confirmClear = false;
+        toasts.success($t("history.empty")); // Or add a specific "Cleared" key
     }
 
     function handleRemove(id: string) {
@@ -18,7 +31,8 @@
 
     function formatTime(timestamp: number): string {
         const date = new Date(timestamp);
-        return date.toLocaleString("id-ID", {
+        const currentLocale = $locale === "id" ? "id-ID" : "en-US";
+        return date.toLocaleString(currentLocale, {
             day: "numeric",
             month: "short",
             hour: "2-digit",
@@ -32,10 +46,16 @@
         <div class="header">
             <h3>
                 <span class="icon">📜</span>
-                Riwayat Simulasi
+                {$t("history.title")}
                 <span class="count">({$blastHistory.length})</span>
             </h3>
-            <button class="clear-btn" on:click={handleClearAll}>
+            <button
+                class="clear-btn {confirmClear ? 'confirming' : ''}"
+                on:click={handleClearAll}
+                title={confirmClear
+                    ? $t("history.confirmClear")
+                    : $t("history.clear")}
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -47,10 +67,12 @@
                 >
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path
-                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2 2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
                     ></path>
                 </svg>
-                Hapus Semua
+                {confirmClear
+                    ? $t("history.confirmClear")
+                    : $t("history.clear")}
             </button>
         </div>
 
@@ -66,7 +88,9 @@
                             >
                         </div>
                         <div class="item-details">
-                            <span class="bomb-name">{event.bombType.name}</span>
+                            <span class="bomb-name"
+                                >{$t(`bomb.${event.bombType.id}`)}</span
+                            >
                             <span class="separator">•</span>
                             <span class="yield"
                                 >{formatNumber(event.bombType.yieldKt)} kt</span
@@ -80,7 +104,7 @@
                     <button
                         class="remove-btn"
                         on:click={() => handleRemove(event.id)}
-                        title="Hapus"
+                        title={$t("history.delete")}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -156,6 +180,23 @@
         opacity: 0.9;
         transform: translateY(-1px);
         box-shadow: var(--shadow-md);
+    }
+
+    .clear-btn.confirming {
+        background: var(--color-warning);
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
     }
 
     .history-list {

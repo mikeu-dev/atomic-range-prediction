@@ -8,12 +8,12 @@
         prepareBlastHistoryForCSV,
     } from "$lib/utils/exportUtils";
     import { generateShareLink, copyToClipboard } from "$lib/utils/shareUtils";
+    import { t } from "$lib/i18n";
+    import { toasts } from "$lib/stores/toastStore";
     import type { BlastEvent } from "$lib/types";
 
     let showMenu = false;
     let isExporting = false;
-    let copySuccess = false;
-    let errorMessage = "";
 
     // Get latest blast event for sharing
     $: latestBlast =
@@ -23,15 +23,15 @@
 
     async function handleExportPNG() {
         isExporting = true;
-        errorMessage = "";
 
         try {
             await exportAsPNG(
                 "app-container",
                 `blast-simulation-${Date.now()}.png`,
             );
+            toasts.success($t("export.exportPNG") + " Success");
         } catch (error) {
-            errorMessage = "PNG export failed";
+            toasts.error($t("export.failed"));
             console.error(error);
         } finally {
             isExporting = false;
@@ -41,15 +41,15 @@
 
     async function handleExportPDF() {
         isExporting = true;
-        errorMessage = "";
 
         try {
             await exportAsPDF(
                 "app-container",
                 `blast-simulation-${Date.now()}.pdf`,
             );
+            toasts.success($t("export.exportPDF") + " Success");
         } catch (error) {
-            errorMessage = "PDF export failed";
+            toasts.error($t("export.failed"));
             console.error(error);
         } finally {
             isExporting = false;
@@ -58,8 +58,6 @@
     }
 
     function handleExportJSON() {
-        errorMessage = "";
-
         try {
             if ($currentBlastData) {
                 // Export current simulation
@@ -67,15 +65,17 @@
                     $currentBlastData,
                     `blast-data-${Date.now()}.json`,
                 );
+                toasts.success($t("export.jsonSuccess"));
             } else if ($blastHistory.length > 0) {
                 // Export all history
                 exportAsJSON($blastHistory, `blast-history-${Date.now()}.json`);
+                toasts.success($t("export.jsonSuccess"));
             } else {
-                errorMessage = "No data to export";
+                toasts.warning($t("export.noData"));
                 return;
             }
         } catch (error) {
-            errorMessage = "JSON export failed";
+            toasts.error($t("export.failed"));
             console.error(error);
         } finally {
             showMenu = false;
@@ -83,18 +83,17 @@
     }
 
     function handleExportCSV() {
-        errorMessage = "";
-
         try {
             if ($blastHistory.length === 0) {
-                errorMessage = "No history to export";
+                toasts.warning($t("export.noData"));
                 return;
             }
 
             const csvData = prepareBlastHistoryForCSV($blastHistory);
             exportAsCSV(csvData, `blast-history-${Date.now()}.csv`);
+            toasts.success($t("export.csvSuccess"));
         } catch (error) {
-            errorMessage = "CSV export failed";
+            toasts.error($t("export.failed"));
             console.error(error);
         } finally {
             showMenu = false;
@@ -102,11 +101,9 @@
     }
 
     async function handleCopyShareLink() {
-        errorMessage = "";
-
         try {
             if (!latestBlast) {
-                errorMessage = "No simulation to share";
+                toasts.warning($t("export.noData"));
                 return;
             }
 
@@ -114,15 +111,12 @@
             const success = await copyToClipboard(shareUrl);
 
             if (success) {
-                copySuccess = true;
-                setTimeout(() => {
-                    copySuccess = false;
-                }, 2000);
+                toasts.success($t("export.linkCopied"));
             } else {
-                errorMessage = "Failed to copy link";
+                toasts.error($t("export.shareFailed"));
             }
         } catch (error) {
-            errorMessage = "Share link generation failed";
+            toasts.error($t("export.failed"));
             console.error(error);
         }
     }
@@ -145,9 +139,9 @@
     >
         {#if isExporting}
             <span class="btn-spinner"></span>
-            Exporting...
+            {$t("export.exporting")}
         {:else}
-            📤 Export & Share
+            📤 {$t("export.title")}
             <span class="arrow">{showMenu ? "▲" : "▼"}</span>
         {/if}
     </button>
@@ -168,7 +162,7 @@
                     disabled={isExporting}
                 >
                     <span class="item-icon">🖼️</span>
-                    <span class="item-text">Export as PNG</span>
+                    <span class="item-text">{$t("export.exportPNG")}</span>
                 </button>
                 <button
                     class="menu-item"
@@ -176,7 +170,7 @@
                     disabled={isExporting}
                 >
                     <span class="item-icon">📄</span>
-                    <span class="item-text">Export as PDF</span>
+                    <span class="item-text">{$t("export.exportPDF")}</span>
                 </button>
             </div>
 
@@ -190,7 +184,7 @@
                     disabled={!$currentBlastData && $blastHistory.length === 0}
                 >
                     <span class="item-icon">📋</span>
-                    <span class="item-text">Export JSON</span>
+                    <span class="item-text">{$t("export.exportJSON")}</span>
                 </button>
                 <button
                     class="menu-item"
@@ -198,7 +192,7 @@
                     disabled={$blastHistory.length === 0}
                 >
                     <span class="item-icon">📊</span>
-                    <span class="item-text">Export CSV</span>
+                    <span class="item-text">{$t("export.exportCSV")}</span>
                 </button>
             </div>
 
@@ -211,18 +205,12 @@
                     on:click={handleCopyShareLink}
                     disabled={!latestBlast}
                 >
-                    <span class="item-icon">{copySuccess ? "✅" : "🔗"}</span>
+                    <span class="item-icon">🔗</span>
                     <span class="item-text">
-                        {copySuccess ? "Link Copied!" : "Copy Share Link"}
+                        {$t("export.shareLink")}
                     </span>
                 </button>
             </div>
-
-            {#if errorMessage}
-                <div class="error-message">
-                    ⚠️ {errorMessage}
-                </div>
-            {/if}
         </div>
     {/if}
 </div>
@@ -365,16 +353,6 @@
         height: 1px;
         background: var(--color-border);
         margin: var(--space-xs) 0;
-    }
-
-    .error-message {
-        padding: var(--space-sm);
-        margin: var(--space-xs);
-        background: hsla(0, 70%, 50%, 0.1);
-        border: 1px solid hsla(0, 70%, 50%, 0.3);
-        border-radius: var(--radius-sm);
-        font-size: var(--font-size-xs);
-        color: var(--color-danger);
     }
 
     @media (max-width: 768px) {

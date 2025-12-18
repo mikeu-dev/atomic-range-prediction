@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { currentBlastData } from "$lib/stores/appStore";
+    import { t } from "$lib/i18n";
 
     const dispatch = createEventDispatcher();
 
@@ -59,14 +60,18 @@
 {#if $currentBlastData}
     <div class="playback-control card fade-in">
         <div class="header">
-            <span class="title">Timeline Playback</span>
+            <span class="title">{$t("timeline.title")}</span>
             <span class="time"
                 >T + {((progress * DURATION) / 100000).toFixed(2)}s</span
             >
         </div>
 
         <div class="controls">
-            <button class="control-btn" on:click={replay} title="Replay">
+            <button
+                class="control-btn"
+                on:click={replay}
+                title={$t("timeline.replay")}
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -83,7 +88,11 @@
                 >
             </button>
 
-            <button class="control-btn play-pause" on:click={togglePlay}>
+            <button
+                class="control-btn play-pause"
+                on:click={togglePlay}
+                title={isPlaying ? "Pause" : "Play"}
+            >
                 {#if isPlaying}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -122,16 +131,16 @@
 
         <div class="milestones">
             <span class="milestone {progress > 5 ? 'reached' : ''}"
-                >Detonation</span
+                >{$t("timeline.detonation")}</span
             >
             <span class="milestone {progress > 30 ? 'reached' : ''}"
-                >Shockwave</span
+                >{$t("timeline.shockwave")}</span
             >
             <span class="milestone {progress > 70 ? 'reached' : ''}"
-                >Thermal</span
+                >{$t("timeline.thermal")}</span
             >
             <span class="milestone {progress > 90 ? 'reached' : ''}"
-                >Fallout</span
+                >{$t("timeline.fallout")}</span
             >
         </div>
     </div>
