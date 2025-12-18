@@ -25,19 +25,8 @@
         const driverObj = driver({
             ...tutorialConfig,
             steps: tutorialSteps,
-            onDestroyStarted: () => {
-                // Mark as completed when tutorial ends
-                localStorage.setItem("tutorial_completed", "true");
-                hasSeenTutorial = true;
-                showNewBadge = false;
-
-                // Destroy the driver
-                if (!driverObj.isActive()) {
-                    driverObj.destroy();
-                }
-            },
             onDestroyed: () => {
-                // Cleanup after tutorial completes
+                // Cleanup after tutorial completes or is closed
                 localStorage.setItem("tutorial_completed", "true");
                 hasSeenTutorial = true;
                 showNewBadge = false;
