@@ -116,8 +116,5 @@ export const tutorialConfig = {
     popoverClass: 'tutorial-popover',
     animate: true,
     overlayColor: 'rgba(0, 0, 0, 0.75)',
-    allowClose: true,
-    onDestroyStarted: () => {
-        // Will be overridden in component
-    }
+    allowClose: true
 };

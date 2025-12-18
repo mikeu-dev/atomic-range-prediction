@@ -4,8 +4,8 @@
     import { tutorialSteps, tutorialConfig } from "$lib/utils/tutorialSteps";
     import "driver.js/dist/driver.css";
 
-    let hasSeenTutorial = false;
-    let showNewBadge = false;
+    let hasSeenTutorial = $state(false);
+    let showNewBadge = $state(false);
 
     onMount(() => {
         // Check if user has seen tutorial
@@ -17,7 +17,7 @@
         if (!hasSeenTutorial) {
             setTimeout(() => {
                 startTutorial();
-            }, 1500);
+            }, 1000);
         }
     });
 
@@ -25,6 +25,16 @@
         const driverObj = driver({
             ...tutorialConfig,
             steps: tutorialSteps,
+            onCloseClick: () => {
+                driverObj.destroy();
+            },
+            onNextClick: () => {
+                if (driverObj.isLastStep()) {
+                    driverObj.destroy();
+                } else {
+                    driverObj.moveNext();
+                }
+            },
             onDestroyed: () => {
                 // Cleanup after tutorial completes or is closed
                 localStorage.setItem("tutorial_completed", "true");
@@ -39,7 +49,7 @@
 
 <button
     class="tutorial-btn"
-    on:click={startTutorial}
+    onclick={startTutorial}
     title="Show Tutorial"
     aria-label="Show interactive tutorial"
 >
