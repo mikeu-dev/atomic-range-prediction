@@ -10,12 +10,19 @@ export interface BombType {
 }
 
 export interface BlastData {
-    fireball: number; // Radius in km (zona inti dengan suhu ekstrem)
-    radiation: number; // Radius in km (zona radiasi langsung mematikan)
-    heavyBlast: number; // Radius in km (zona ledakan kuat, 20 psi)
-    moderateBlast: number; // Radius in km (zona ledakan moderat, 5 psi)
-    lightBlast: number; // Radius in km (zona ledakan ringan, 1 psi)
-    thermal: number; // Radius in km (zona radiasi termal, luka bakar tingkat 3)
+    fireball: number; // Radius in km
+    radiation: number; // Radius in km
+    heavyBlast: number; // Radius in km
+    moderateBlast: number; // Radius in km
+    lightBlast: number; // Radius in km
+    thermal: number; // Radius in km
+}
+
+export interface DetailedBlastData extends BlastData {
+    fatalities: number;
+    injuries: number;
+    infrastructureDamage: number;
+    zones: BlastZone[];
 }
 
 export interface CountryData {
@@ -34,6 +41,9 @@ export interface BlastEvent {
     blastData: BlastData;
     timestamp: number;
     coordinates: number[];
+    fatalities?: number;
+    injuries?: number;
+    infrastructure?: number;
 }
 
 export type MapProjectionType =
@@ -41,7 +51,8 @@ export type MapProjectionType =
     | 'geoEquirectangular'
     | 'geoMercator'
     | 'geoNaturalEarth1'
-    | 'geoOrthographic';
+    | 'geoOrthographic'
+    | 'geoGlobe'; // Added 3D Globe mode
 
 export interface MapConfig {
     projection: MapProjectionType;
@@ -54,8 +65,9 @@ export interface MapConfig {
 }
 
 export interface WindConfig {
-    direction: number; // Arah angin dalam derajat (0-360, 0 = utara)
-    speed: number; // Kecepatan angin dalam km/jam
+    direction: number; // degree
+    speed: number; // km/h
+    isRealTime?: boolean; // New: indicates if using real-time weather
 }
 
 export interface FalloutPattern {
@@ -63,17 +75,21 @@ export interface FalloutPattern {
     centerLon: number;
     windDirection: number;
     windSpeed: number;
-    intensity: number; // Intensitas radiasi (0-1)
-    length: number; // Panjang pola fallout dalam km
-    width: number; // Lebar pola fallout dalam km
+    intensity: number;
+    length: number;
+    width: number;
 }
 
 export interface BlastZone {
+    type: 'fireball' | 'radiation' | 'heavyBlast' | 'moderateBlast' | 'lightBlast' | 'thermal';
     name: string;
     radius: number;
     color: string;
     opacity: number;
     description: string;
-    casualties?: number; // Estimasi korban di zona ini
-    overpressure?: number; // Tekanan ledakan dalam psi
+    descriptionId?: string; // Multilingual description
+    fatalities?: number;
+    injuries?: number;
+    damage?: number; // Infrastructure damage % in this zone
+    overpressure?: number;
 }

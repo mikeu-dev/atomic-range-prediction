@@ -10,6 +10,7 @@
         BLAST_ZONE_OPACITY,
     } from "$lib/utils/constants";
     import { getPopulationDensityInfo } from "$lib/utils/populationData";
+    import { getWindDirectionName } from "$lib/utils/windEffects";
 
     let copySuccess = false;
 
@@ -105,6 +106,79 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
                     </div>
                 </div>
             {/if}
+        </div>
+
+        <!-- Lokasi & Cuaca Section -->
+        <div class="weather-section">
+            <div class="weather-card">
+                <div class="weather-header">
+                    <span class="weather-icon">🌬️</span>
+                    <h3>Cuaca & Fallout</h3>
+                </div>
+                {#if $currentBlastData.wind}
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <span class="w-label">Arah Angin</span>
+                            <span class="w-value">
+                                {getWindDirectionName(
+                                    $currentBlastData.wind.direction,
+                                )}
+                                ({$currentBlastData.wind.direction}°)
+                            </span>
+                        </div>
+                        <div class="weather-item">
+                            <span class="w-label">Kecepatan</span>
+                            <span class="w-value"
+                                >{$currentBlastData.wind.speed} km/jam</span
+                            >
+                        </div>
+                        <div class="weather-item">
+                            <span class="w-label">Sumber</span>
+                            <span class="w-value"
+                                >{$currentBlastData.wind.isRealTime
+                                    ? "📡 Real-time"
+                                    : "🎲 Simulasi"}</span
+                            >
+                        </div>
+                    </div>
+                {:else}
+                    <p class="no-data">Data cuaca tidak tersedia</p>
+                {/if}
+
+                {#if $currentBlastData.falloutPattern}
+                    <div class="fallout-info">
+                        <div class="fallout-meter">
+                            <span class="w-label"
+                                >Intensitas Radiasi Fallout</span
+                            >
+                            <div class="progress-bar fallout">
+                                <div
+                                    class="progress-fill"
+                                    style="width: {$currentBlastData
+                                        .falloutPattern.intensity *
+                                        100}%; background: #ADFF2F;"
+                                ></div>
+                                <span class="progress-text"
+                                    >{(
+                                        $currentBlastData.falloutPattern
+                                            .intensity * 100
+                                    ).toFixed(0)}%</span
+                                >
+                            </div>
+                        </div>
+                        <p class="fallout-desc">
+                            Radiasi menyebar sejauh <strong
+                                >{$currentBlastData.falloutPattern.length.toFixed(
+                                    1,
+                                )} km</strong
+                            >
+                            ke arah {getWindDirectionName(
+                                $currentBlastData.falloutPattern.windDirection,
+                            )}.
+                        </p>
+                    </div>
+                {/if}
+            </div>
         </div>
 
         <!-- Mini Visualisasi Blast Zones -->
@@ -341,15 +415,36 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
 
         <!-- Summary Stats -->
         <div class="summary">
+            <div class="summary-item main-stat">
+                <span class="icon">☠️</span>
+                <div>
+                    <p class="summary-label">Estimasi Korban Jiwa</p>
+                    <p class="summary-value fatalities">
+                        {formatNumber($currentBlastData.fatalities)} orang
+                    </p>
+                </div>
+            </div>
+
+            <div class="summary-item secondary-stat">
+                <span class="icon">🏥</span>
+                <div>
+                    <p class="summary-label">Estimasi Korban Luka</p>
+                    <p class="summary-value injuries">
+                        {formatNumber($currentBlastData.injuries)} orang
+                    </p>
+                </div>
+            </div>
+
             <div class="summary-item">
                 <span class="icon">👥</span>
                 <div>
-                    <p class="summary-label">Total Populasi Terdampak</p>
+                    <p class="summary-label">Populasi Terdampak</p>
                     <p class="summary-value">
                         {formatNumber($currentBlastData.population)} orang
                     </p>
                 </div>
             </div>
+
             <div class="summary-item">
                 <span class="icon">🏗️</span>
                 <div>
@@ -571,6 +666,7 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
     /* Summary */
     .summary {
         display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: var(--space-md);
     }
 
@@ -581,6 +677,17 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
         background: var(--color-bg-tertiary);
         border-radius: var(--radius-md);
         align-items: center;
+        border: 1px solid var(--color-border);
+    }
+
+    .summary-item.main-stat {
+        border-color: var(--color-danger);
+        background: rgba(255, 78, 80, 0.05);
+    }
+
+    .summary-item.secondary-stat {
+        border-color: var(--color-warning);
+        background: rgba(246, 211, 101, 0.05);
     }
 
     .summary-item .icon {
@@ -588,16 +695,26 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
     }
 
     .summary-label {
-        font-size: var(--font-size-sm);
+        font-size: var(--font-size-xs);
         color: var(--color-text-secondary);
         margin: 0 0 var(--space-xs) 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .summary-value {
         font-size: var(--font-size-lg);
         font-weight: 700;
-        color: var(--color-primary);
+        color: var(--color-text-primary);
         margin: 0;
+    }
+
+    .summary-value.fatalities {
+        color: var(--color-danger);
+    }
+
+    .summary-value.injuries {
+        color: var(--color-warning);
     }
 
     .icon {
@@ -637,6 +754,92 @@ Kerusakan Infrastruktur: ${$currentBlastData.infrastructure}%
         font-weight: 600;
         font-size: var(--font-size-sm);
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Weather Section */
+    .weather-section {
+        margin-bottom: var(--space-lg);
+    }
+
+    .weather-card {
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        border: 1px solid var(--color-border);
+    }
+
+    .weather-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-md);
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: var(--space-xs);
+    }
+
+    .weather-icon {
+        font-size: 1.5rem;
+    }
+
+    .weather-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+
+    .weather-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .w-label {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .w-value {
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        color: var(--color-text-primary);
+    }
+
+    .fallout-info {
+        padding: var(--space-md);
+        background: var(--color-bg-secondary);
+        border-radius: var(--radius-sm);
+        border-left: 3px solid #adff2f;
+    }
+
+    .fallout-meter {
+        margin-bottom: var(--space-sm);
+    }
+
+    .progress-bar.fallout {
+        height: 20px;
+        margin-top: 4px;
+    }
+
+    .fallout-desc {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .no-data {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+        font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+        .weather-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
     @media (max-width: 768px) {

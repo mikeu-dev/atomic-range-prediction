@@ -8,10 +8,12 @@
         addBlastToHistory,
         comparisonMode,
         comparisonBombs,
+        useRealTimeWeather,
     } from "$lib/stores/appStore";
     import {
         calculateBlastRadius,
         estimatePopulationAffected,
+        calculateDetailedMetrics,
         generateId,
     } from "$lib/utils/blastCalculator";
     import {
@@ -19,9 +21,12 @@
         calculateFalloutPattern,
         generateFalloutPolygon,
     } from "$lib/utils/windEffects";
+    import { fetchRealTimeWeather } from "$lib/utils/weatherService";
     import {
         BLAST_ZONE_COLORS,
         BLAST_ZONE_OPACITY,
+        FALLOUT_COLORS,
+        FALLOUT_OPACITY,
         ANIMATION,
     } from "$lib/utils/constants";
     import type { BlastEvent } from "$lib/types";
@@ -157,7 +162,11 @@
             }),
         );
 
-        function createButton(text: string, projection: any) {
+        function createButton(
+            text: string,
+            projection: any,
+            isGlobe: boolean = false,
+        ) {
             const button = buttons.children.push(
                 am5.Button.new(root, {
                     paddingTop: 0,
@@ -168,20 +177,27 @@
                     marginRight: 5,
                     label: am5.Label.new(root, {
                         text: text,
+                        fontSize: "12px",
+                        fontWeight: "500",
                     }),
                 }),
             );
 
             button.events.on("click", function () {
                 chart.set("projection", projection);
+                if (isGlobe) {
+                    chart.set("panX", "rotateX");
+                    chart.set("panY", "rotateY");
+                } else {
+                    chart.set("panX", "translateX");
+                    chart.set("panY", "translateY");
+                }
             });
         }
 
-        createButton("EqualEarth", am5map.geoEqualEarth());
-        createButton("Equirect", am5map.geoEquirectangular());
-        createButton("Mercator", am5map.geoMercator());
-        createButton("NaturalEarth", am5map.geoNaturalEarth1());
-        createButton("Ortho", am5map.geoOrthographic());
+        createButton("2D", am5map.geoMercator());
+        createButton("Flat", am5map.geoNaturalEarth1());
+        createButton("Globe", am5map.geoOrthographic(), true);
 
         // Create polygon series (countries)
         polygonSeries = chart.series.push(
@@ -358,11 +374,10 @@
         );
 
         falloutSeries.mapPolygons.template.setAll({
-            fill: am5.color(0x00ff00),
-            fillOpacity: 0.3,
+            templateField: "polygonSettings",
+            tooltipText: "{tooltipText}",
             stroke: am5.color(0x00aa00),
-            strokeWidth: 1,
-            tooltipText: "Fallout Zone",
+            strokeWidth: 0.5,
         });
 
         // Handle country click
@@ -466,103 +481,10 @@
                 }
                 const sanitizedCountryName = countryValidation.value;
 
-                //Calculate and add blast zones
-                isCalculating = true;
+                const sanitizedCountryName = countryValidation.value;
 
-                const blastData = calculateBlastRadius($selectedBomb.yieldKt);
-                const population = estimatePopulationAffected(
-                    blastData.thermal,
-                    latitude,
-                    longitude,
-                    sanitizedCountryName,
-                );
-                const infrastructure = Math.round(70 + Math.random() * 30);
-
-                // Generate wind configuration
-                const wind = generateRandomWind();
-
-                // Calculate fallout pattern
-                const falloutPattern = calculateFalloutPattern(
-                    latitude,
-                    longitude,
-                    $selectedBomb.yieldKt,
-                    wind,
-                );
-
-                // Add all blast zones to map
-                const pointGeometry = { type: "Point", coordinates: centroid };
-
-                thermalSeries.data.push({
-                    zoneName: "Thermal Radiation",
-                    radius: blastData.thermal,
-                    geometry: pointGeometry,
-                });
-
-                lightBlastSeries.data.push({
-                    zoneName: "Light Blast (1 psi)",
-                    radius: blastData.lightBlast,
-                    geometry: pointGeometry,
-                });
-
-                moderateBlastSeries.data.push({
-                    zoneName: "Moderate Blast (5 psi)",
-                    radius: blastData.moderateBlast,
-                    geometry: pointGeometry,
-                });
-
-                heavyBlastSeries.data.push({
-                    zoneName: "Heavy Blast (20 psi)",
-                    radius: blastData.heavyBlast,
-                    geometry: pointGeometry,
-                });
-
-                radiationSeries.data.push({
-                    zoneName: "Radiation Zone",
-                    radius: blastData.radiation,
-                    geometry: pointGeometry,
-                });
-
-                fireballSeries.data.push({
-                    zoneName: "Fireball",
-                    radius: blastData.fireball,
-                    geometry: pointGeometry,
-                });
-
-                // Add fallout pattern visualization
-                const falloutPoints = generateFalloutPolygon(falloutPattern);
-
-                const falloutGeometry = {
-                    type: "Polygon",
-                    coordinates: [falloutPoints],
-                };
-
-                falloutSeries.data.push({
-                    geometry: falloutGeometry,
-                    tooltipText: `Fallout Zone\nIntensitas: ${Math.round(falloutPattern.intensity * 100)}%\nArah Angin: ${wind.direction}°\nKecepatan: ${wind.speed} km/jam`,
-                });
-
-                // Update current blast data
-                currentBlastData.set({
-                    countryName: sanitizedCountryName,
-                    blastData,
-                    population,
-                    infrastructure,
-                });
-
-                // Add to history
-                const blastEvent: BlastEvent = {
-                    id: generateId(),
-                    countryName: sanitizedCountryName,
-                    bombType: $selectedBomb,
-                    blastData,
-                    timestamp: Date.now(),
-                    coordinates: centroid,
-                };
-
-                addBlastToHistory(blastEvent);
-
-                // Hide calculating state
-                isCalculating = false;
+                // Run the simulation
+                runSimulation(latitude, longitude, sanitizedCountryName);
             },
         );
         // Add zoom control
@@ -575,6 +497,193 @@
         // Map loaded, hide loading screen
         isLoading = false;
     });
+
+    let lastSimLocation: { lat: number; lon: number; name: string } | null =
+        null;
+
+    /**
+     * Run simulation at specific coordinates
+     */
+    async function runSimulation(
+        latitude: number,
+        longitude: number,
+        countryName: string,
+    ) {
+        lastSimLocation = { lat: latitude, lon: longitude, name: countryName };
+
+        // Clear existing data from all series
+        thermalSeries.data.clear();
+        lightBlastSeries.data.clear();
+        moderateBlastSeries.data.clear();
+        heavyBlastSeries.data.clear();
+        radiationSeries.data.clear();
+        fireballSeries.data.clear();
+        falloutSeries.data.clear();
+
+        isCalculating = true;
+
+        const blastData = calculateBlastRadius($selectedBomb.yieldKt);
+        const population = estimatePopulationAffected(
+            blastData.thermal,
+            latitude,
+            longitude,
+            countryName,
+        );
+
+        const metrics = calculateDetailedMetrics(
+            blastData,
+            latitude,
+            longitude,
+            countryName,
+        );
+
+        // Weather logic
+        let wind;
+        if ($useRealTimeWeather) {
+            try {
+                const weatherData = await fetchRealTimeWeather(
+                    latitude,
+                    longitude,
+                );
+                wind = {
+                    direction: weatherData.windDirection,
+                    speed: weatherData.windSpeed,
+                    isRealTime: true,
+                };
+            } catch (e) {
+                console.error("Failed to fetch real-time weather:", e);
+                wind = generateRandomWind();
+            }
+        } else {
+            wind = generateRandomWind();
+        }
+
+        const falloutPattern = calculateFalloutPattern(
+            latitude,
+            longitude,
+            $selectedBomb.yieldKt,
+            wind,
+        );
+
+        const centroid = [longitude, latitude];
+        const pointGeometry = { type: "Point", coordinates: centroid };
+
+        // Push data to series - this triggers animations automatically
+        thermalSeries.data.push({
+            zoneName: "Thermal Radiation",
+            radius: blastData.thermal,
+            geometry: pointGeometry,
+        });
+
+        lightBlastSeries.data.push({
+            zoneName: "Light Blast (1 psi)",
+            radius: blastData.lightBlast,
+            geometry: pointGeometry,
+        });
+
+        moderateBlastSeries.data.push({
+            zoneName: "Moderate Blast (5 psi)",
+            radius: blastData.moderateBlast,
+            geometry: pointGeometry,
+        });
+
+        heavyBlastSeries.data.push({
+            zoneName: "Heavy Blast (20 psi)",
+            radius: blastData.heavyBlast,
+            geometry: pointGeometry,
+        });
+
+        radiationSeries.data.push({
+            zoneName: "Radiation Zone",
+            radius: blastData.radiation,
+            geometry: pointGeometry,
+        });
+
+        fireballSeries.data.push({
+            zoneName: "Fireball",
+            radius: blastData.fireball,
+            geometry: pointGeometry,
+        });
+
+        // Add fallout pattern with 3 layers for intensity visualization
+        const windDirectionName =
+            wind.direction +
+            "° (" +
+            (wind.isRealTime ? "Real-time" : "Simulated") +
+            ")";
+
+        // Low intensity fallout (outer layer)
+        const falloutPointsLow = generateFalloutPolygon(falloutPattern, 1.0);
+        falloutSeries.data.push({
+            geometry: { type: "Polygon", coordinates: [falloutPointsLow] },
+            polygonSettings: {
+                fill: am5Core.color(FALLOUT_COLORS.low),
+                fillOpacity: FALLOUT_OPACITY.low,
+            },
+            tooltipText: `Fallout Zone (Low Intensity)\nArah Angin: ${windDirectionName}\nKecepatan: ${wind.speed} km/jam`,
+        });
+
+        // Medium intensity fallout (middle layer)
+        const falloutPointsMed = generateFalloutPolygon(falloutPattern, 0.6);
+        falloutSeries.data.push({
+            geometry: { type: "Polygon", coordinates: [falloutPointsMed] },
+            polygonSettings: {
+                fill: am5Core.color(FALLOUT_COLORS.medium),
+                fillOpacity: FALLOUT_OPACITY.medium,
+            },
+            tooltipText: `Fallout Zone (Medium Intensity)`,
+        });
+
+        // High intensity fallout (inner layer)
+        const falloutPointsHigh = generateFalloutPolygon(falloutPattern, 0.3);
+        falloutSeries.data.push({
+            geometry: { type: "Polygon", coordinates: [falloutPointsHigh] },
+            polygonSettings: {
+                fill: am5Core.color(FALLOUT_COLORS.high),
+                fillOpacity: FALLOUT_OPACITY.high,
+            },
+            tooltipText: `Fallout Zone (High Intensity)`,
+        });
+
+        currentBlastData.set({
+            countryName: countryName,
+            blastData,
+            population,
+            fatalities: metrics.fatalities,
+            injuries: metrics.injuries,
+            infrastructure: metrics.infrastructure,
+            wind,
+            falloutPattern,
+        });
+
+        const blastEvent: BlastEvent = {
+            id: generateId(),
+            countryName: countryName,
+            bombType: $selectedBomb,
+            blastData,
+            timestamp: Date.now(),
+            coordinates: centroid,
+            fatalities: metrics.fatalities,
+            injuries: metrics.injuries,
+            infrastructure: metrics.infrastructure,
+        };
+
+        addBlastToHistory(blastEvent);
+        isCalculating = false;
+    }
+
+    /**
+     * Replay last simulation
+     */
+    export function replaySimulation() {
+        if (lastSimLocation) {
+            runSimulation(
+                lastSimLocation.lat,
+                lastSimLocation.lon,
+                lastSimLocation.name,
+            );
+        }
+    }
 
     /**
      * Pan and zoom map to specific location

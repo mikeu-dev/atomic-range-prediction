@@ -73,6 +73,24 @@ export const BLAST_ZONE_OPACITY = {
 } as const;
 
 /**
+ * Warna untuk zona fallout
+ */
+export const FALLOUT_COLORS = {
+    high: '#7FFF00',    // Intensitas tinggi
+    medium: '#ADFF2F',  // Intensitas sedang
+    low: '#FFFF00'      // Intensitas rendah
+} as const;
+
+/**
+ * Opacity untuk zona fallout
+ */
+export const FALLOUT_OPACITY = {
+    high: 0.4,
+    medium: 0.3,
+    low: 0.2
+} as const;
+
+/**
  * Konstanta animasi
  */
 export const ANIMATION = {

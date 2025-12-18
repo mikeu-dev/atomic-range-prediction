@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store';
-import type { BombType, BlastEvent, BlastData } from '$lib/types';
+import type { BombType, BlastEvent, BlastData, WindConfig, FalloutPattern } from '$lib/types';
 import { DEFAULT_BOMB } from '$lib/utils/constants';
 
 /**
@@ -15,6 +15,9 @@ export const blastHistory = writable<BlastEvent[]>([]);
 // Comparison mode state
 export const comparisonMode = writable<boolean>(false);
 export const comparisonBombs = writable<BombType[]>([]);
+
+// Weather state
+export const useRealTimeWeather = writable<boolean>(false);
 
 // Derived store: get active bombs for simulation
 // In comparison mode, returns selected bombs; otherwise returns current selected bomb
@@ -35,7 +38,11 @@ export const currentBlastData = writable<{
     countryName: string;
     blastData: BlastData;
     population: number;
+    fatalities: number;
+    injuries: number;
     infrastructure: number;
+    wind?: WindConfig;
+    falloutPattern?: FalloutPattern;
 } | null>(null);
 
 /**

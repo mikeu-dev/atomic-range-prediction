@@ -106,35 +106,54 @@ export function calculateRadiationIntensity(
 
 /**
  * Generate polygon points for fallout visualization
+ * Creates a realistic ellipse shape offset from the epicenter in the direction of wind
  * 
  * @param fallout - Pola fallout
+ * @param scale - Scale factor for different zones (1.0 for outer, 0.5 for inner, etc.)
  * @returns Array of [lon, lat] coordinates untuk polygon
  */
-export function generateFalloutPolygon(fallout: FalloutPattern): number[][] {
+export function generateFalloutPolygon(fallout: FalloutPattern, scale: number = 1.0): number[][] {
     const points: number[][] = [];
-    const segments = 20; // Jumlah segmen untuk smooth curve
+    const segments = 36; // More segments for smoother ellipse
 
     // Convert wind direction to radians
-    const windRad = (fallout.windDirection * Math.PI) / 180;
+    // Math.atan2 use (y, x) and 0 is East. 
+    // Wind direction 0 is North, 90 is East.
+    // So angle = (90 - direction)
+    const windRad = ((90 - fallout.windDirection) * Math.PI) / 180;
 
-    // Convert km to approximate degrees (rough approximation)
+    // Convert km to approximate degrees
     const kmToDeg = 1 / 111;
 
-    // Create ellipse-like shape pointing in wind direction
+    const length = fallout.length * scale;
+    const width = fallout.width * scale;
+
+    // Episentrum berada di "pangkal" elips, bukan di tengah
+    // Jadi kita geser pusat elips sejauh length/2 ke arah angin
+    const offsetDistance = length / 2;
+    const centerOffsetLon = offsetDistance * Math.cos(windRad) * kmToDeg;
+    const centerOffsetLat = offsetDistance * Math.sin(windRad) * kmToDeg;
+
+    const ellipseCenterLon = fallout.centerLon + centerOffsetLon;
+    const ellipseCenterLat = fallout.centerLat + centerOffsetLat;
+
     for (let i = 0; i <= segments; i++) {
         const angle = (i / segments) * Math.PI * 2;
 
-        // Radius varies: longer in wind direction, shorter perpendicular
-        const r = i < segments / 2 || i > segments * 3 / 4
-            ? fallout.length * kmToDeg
-            : fallout.width * kmToDeg;
+        // Ellipse formula with rotation
+        // x = a * cos(t), y = b * sin(t)
+        // rotated_x = x*cos(rot) - y*sin(rot)
+        // rotated_y = x*sin(rot) + y*cos(rot)
 
-        const x = r * Math.cos(angle + windRad);
-        const y = r * Math.sin(angle + windRad);
+        const x = (length / 2) * Math.cos(angle);
+        const y = (width / 2) * Math.sin(angle);
+
+        const rotatedX = (x * Math.cos(windRad) - y * Math.sin(windRad)) * kmToDeg;
+        const rotatedY = (x * Math.sin(windRad) + y * Math.cos(windRad)) * kmToDeg;
 
         points.push([
-            fallout.centerLon + x,
-            fallout.centerLat + y
+            ellipseCenterLon + rotatedX,
+            ellipseCenterLat + rotatedY
         ]);
     }
 

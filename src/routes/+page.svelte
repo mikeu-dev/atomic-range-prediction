@@ -12,6 +12,7 @@
     import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import EducationalPanel from "$lib/components/EducationalPanel.svelte";
     import HistoricalEvents from "$lib/components/HistoricalEvents.svelte";
+    import PlaybackControl from "$lib/components/PlaybackControl.svelte";
     import { comparisonMode } from "$lib/stores/appStore";
 
     let mapChartRef: any;
@@ -85,6 +86,8 @@
                 <BlastHistory />
             </div>
         {/if}
+
+        <PlaybackControl on:replay={() => mapChartRef?.replaySimulation()} />
 
         <footer class="footer">
             <p>

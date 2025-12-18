@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { selectedBomb } from "$lib/stores/appStore";
+    import { selectedBomb, useRealTimeWeather } from "$lib/stores/appStore";
     import { BOMB_TYPES } from "$lib/utils/constants";
     import type { BombType } from "$lib/types";
 
@@ -91,15 +91,113 @@
             </div>
         {/if}
     </div>
+
+    <!-- Real-time Weather Toggle -->
+    <div class="weather-toggle">
+        <label class="switch">
+            <input type="checkbox" bind:checked={$useRealTimeWeather} />
+            <span class="slider round"></span>
+        </label>
+        <div class="weather-info">
+            <span class="weather-label">Gunakan Cuaca Real-time</span>
+            <span class="weather-desc"
+                >Menyesuaikan fallout dengan arah angin aktual (Mock Data)</span
+            >
+        </div>
+    </div>
 </div>
 
 <style>
     .bomb-selector {
         display: flex;
         flex-direction: column;
-        gap: var(--space-sm);
+        gap: var(--space-md);
         width: 100%;
         max-width: 400px;
+    }
+
+    .weather-toggle {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-border);
+    }
+
+    .weather-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .weather-label {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--color-text-primary);
+    }
+
+    .weather-desc {
+        font-size: 10px;
+        color: var(--color-text-secondary);
+    }
+
+    /* Switch Style */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 22px;
+        flex-shrink: 0;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--color-border);
+        transition: 0.4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.4s;
+    }
+
+    input:checked + .slider {
+        background-color: var(--color-primary);
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px var(--color-primary);
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
+    .slider.round {
+        border-radius: 22px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
     }
 
     label {
