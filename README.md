@@ -67,6 +67,14 @@ npm run dev
 
 Buka browser di `http://localhost:5173`
 
+### 🌐 Deployment
+
+Proyek ini siap di-deploy ke **Vercel** dengan konfigurasi otomatis:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyourusername%2Fatomic-range-prediction)
+
+Untuk detail lebih lanjut, lihat [DEPLOYMENT.md](file:///var/www/html/atomic-range-prediction/DEPLOYMENT.md).
+
 ---
 
 ## 📖 Usage Guide

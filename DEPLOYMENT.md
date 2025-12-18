@@ -29,7 +29,7 @@ npm install
 npm run build
 ```
 
-Build output akan ada di folder `build/`.
+Build output akan dioptimalkan untuk Vercel (menggunakan `@sveltejs/adapter-vercel`).
 
 ### 3. Preview Production Build (Optional)
 
@@ -54,25 +54,27 @@ Test di `http://localhost:4173`
 
 **Steps:**
 
-1. **Install Vercel CLI**
-   ```bash
-   npm install -g vercel
-   ```
+1. **Konfigurasi Adapter** (Sudah dilakukan)
+   Kami menggunakan `@sveltejs/adapter-vercel` untuk integrasi terbaik.
 
-2. **Login ke Vercel**
-   ```bash
-   vercel login
-   ```
+2. **Push ke Git**
+   Push kode Anda ke GitHub, GitLab, atau Bitbucket.
 
-3. **Deploy**
-   ```bash
-   vercel
-   ```
+3. **Impor di Vercel**
+   - Masuk ke dashboard [vercel.com](https://vercel.com).
+   - Klik "Add New" -> "Project".
+   - Impor repositori Anda.
+   - Vercel akan mendeteksi SvelteKit dan menggunakan pengaturan yang ada di `vercel.json` dan `svelte.config.js`.
 
-4. **Production Deployment**
-   ```bash
-   vercel --prod
-   ```
+4. **Deploy**
+   Klik "Deploy". Selesai!
+
+**Vercel CLI (Alternatif):**
+```bash
+npm install -g vercel
+vercel      # Untuk preview
+vercel --prod # Untuk production
+```
 
 **Auto-Deploy dari GitHub:**
 
