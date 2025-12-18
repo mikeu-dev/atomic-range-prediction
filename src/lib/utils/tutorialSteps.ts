@@ -55,7 +55,7 @@ export const tutorialSteps: DriveStep[] = [
         element: '.map-container',
         popover: {
             title: '🗺️ Peta Interaktif',
-            description: 'Klik pada <strong>negara mana saja</strong> di peta untuk memulai simulasi. Animasi blast zones akan muncul dengan 6 zona berbeda warna!',
+            description: 'Klik pada <strong>negara mana saja</strong> di peta untuk memulai simulasi. Animasi blast zones akan muncul bersama <strong>pola fallout</strong> yang mengikuti arah angin!',
             side: 'top',
             align: 'center'
         }

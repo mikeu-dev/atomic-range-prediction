@@ -87,7 +87,10 @@
             </div>
         {/if}
 
-        <PlaybackControl on:replay={() => mapChartRef?.replaySimulation()} />
+        <PlaybackControl
+            on:seek={(e) => mapChartRef?.seekSimulation(e.detail.progress)}
+            on:replay={() => mapChartRef?.replaySimulation()}
+        />
 
         <footer class="footer">
             <p>

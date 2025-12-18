@@ -21,29 +21,29 @@
             icon: "💥",
             content: `
                 <h3>Understanding Blast Zones</h3>
-                <p>Nuclear explosions create concentric zones of destruction based on pressure overpressure (PSI - pounds per square inch):</p>
+                <p>Nuclear explosions create concentric zones of destruction based on overpressure (PSI) and radiation (REM):</p>
                 <ul>
-                    <li><strong>🔥 Fireball (> 20 psi):</strong> Temperature exceeds 20 million °C. Complete vaporization of all materials. Radius depends on yield.</li>
-                    <li><strong>☢️ Radiation (500+ rem):</strong> Lethal radiation dose. Immediate fatalities within minutes to hours.</li>
-                    <li><strong>💥 Heavy Blast (20 psi):</strong> Reinforced concrete buildings destroyed. Multi-story structures collapse.</li>
-                    <li><strong>💣 Moderate Blast (5 psi):</strong> Most residential buildings collapse. Severe injuries and fatalities.</li>
-                    <li><strong>🌊 Light Blast (1 psi):</strong> Windows shatter, light injuries from flying glass and debris.</li>
+                    <li><strong>🔥 Fireball (> 200 psi):</strong> Extreme heat (20m °C). Immediate vaporization.</li>
+                    <li><strong>☢️ Radiation (500+ rem):</strong> Lethal dose. Fatalities within 48 hours.</li>
+                    <li><strong>💥 Heavy Blast (20 psi):</strong> Concrete buildings destroyed. Heavily reinforced structures collapse.</li>
+                    <li><strong>💣 Moderate Blast (5 psi):</strong> Residential houses collapse. Widespread fatalities.</li>
+                    <li><strong>🌊 Light Blast (1 psi):</strong> Glass shatters. Injuries from debris.</li>
                     <li><strong>🌡️ Thermal Radiation:</strong> 3rd degree burns. Can ignite fires miles away.</li>
                 </ul>
-                <p><em>The actual damage depends on many factors: altitude of detonation, terrain, building types, weather conditions.</em></p>
+                <p><em>PSI = Pounds per Square Inch (Pressure). REM = Roentgen Equivalent Man (Radiation dose).</em></p>
             `,
             contentId: `
                 <h3>Penjelasan Zona Ledakan</h3>
-                <p>Ledakan nuklir menciptakan zona destruksi konsentris berdasarkan tekanan overpressure (PSI - pounds per square inch):</p>
+                <p>Ledakan nuklir menciptakan zona destruksi konsentris berdasarkan tekanan (PSI) dan dosis radiasi (REM):</p>
                 <ul>
-                    <li><strong>🔥 Bola Api (> 20 psi):</strong> Suhu melebihi 20 juta °C. Penguapan sempurna semua material. Radius bergantung pada yield.</li>
-                    <li><strong>☢️ Radiasi (500+ rem):</strong> Dosis radiasi mematikan. Kematian segera dalam menit hingga jam.</li>
-                    <li><strong>💥 Ledakan Berat (20 psi):</strong> Bangunan beton bertulang hancur. Struktur bertingkat runtuh.</li>
-                    <li><strong>💣 Ledakan Sedang (5 psi):</strong> Sebagian besar bangunan perumahan runtuh. Cedera parah dan kematian.</li>
-                    <li><strong>🌊 Ledakan Ringan (1 psi):</strong> Jendela pecah, cedera ringan dari serpihan kaca dan puing.</li>
-                    <li><strong>🌡️ Radiasi Termal:</strong> Luka bakar tingkat 3. Dapat membakar api bermil-mil jauhnya.</li>
+                    <li><strong>🔥 Bola Api (> 200 psi):</strong> Panas ekstrem (20jt °C). Penguapan instan material.</li>
+                    <li><strong>☢️ Radiasi (500+ rem):</strong> Dosis mematikan. Kematian dalam 48 jam.</li>
+                    <li><strong>💥 Ledakan Berat (20 psi):</strong> Gedung beton hancur. Struktur bertulang runtuh.</li>
+                    <li><strong>💣 Ledakan Sedang (5 psi):</strong> Rumah penduduk runtuh. Kematian massal.</li>
+                    <li><strong>🌊 Ledakan Ringan (1 psi):</strong> Kaca pecah. Luka-luka akibat serpihan.</li>
+                    <li><strong>🌡️ Radiasi Termal:</strong> Luka bakar tingkat 3. Memicu kebakaran luas.</li>
                 </ul>
-                <p><em>Kerusakan aktual bergantung pada banyak faktor: ketinggian ledakan, medan, jenis bangunan, kondisi cuaca.</em></p>
+                <p><em>PSI = Pounds per Square Inch (Tekanan). REM = Satuan dosis radiasi yang diserap tubuh manusia.</em></p>
             `,
         },
         {
@@ -173,16 +173,15 @@
         class="educational-overlay"
         on:click={() => (showPanel = false)}
         on:keydown={(e) => e.key === "Escape" && (showPanel = false)}
-        role="dialog"
-        aria-modal="true"
-        tabindex="-1"
+        role="presentation"
     >
         <div
             class="educational-panel glass"
             on:click|stopPropagation
             on:keydown={(e) => e.stopPropagation()}
-            role="document"
-            tabindex="0"
+            role="dialog"
+            aria-modal="true"
+            tabindex="-1"
         >
             <div class="panel-header">
                 <h3>📚 Educational Resources</h3>

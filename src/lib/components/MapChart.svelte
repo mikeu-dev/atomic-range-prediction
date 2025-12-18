@@ -50,6 +50,7 @@
     let lightBlastSeries: any;
     let thermalSeries: any;
     let falloutSeries: any;
+    let windSeries: any;
 
     let isLoading = true;
     let isCalculating = false;
@@ -380,6 +381,34 @@
             strokeWidth: 0.5,
         });
 
+        // Wind indicator series (point)
+        windSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+
+        windSeries.bullets.push(function () {
+            const container = am5.Container.new(root, {
+                centerX: am5.p50,
+                centerY: am5.p50,
+            });
+
+            const arrow = container.children.push(
+                am5.Graphics.new(root, {
+                    stroke: am5.color(0xffffff),
+                    strokeWidth: 2,
+                    fill: am5.color(0x33ff33),
+                    fillOpacity: 1,
+                    centerX: am5.p50,
+                    centerY: am5.p50,
+                    svgPath: "M0,0 L10,5 L0,10 L3,5 Z",
+                    scale: 2,
+                    templateField: "graphicSettings",
+                }),
+            );
+
+            return am5.Bullet.new(root, {
+                sprite: container,
+            });
+        });
+
         // Handle country click
         polygonSeries.mapPolygons.template.events.on(
             "click",
@@ -481,8 +510,6 @@
                 }
                 const sanitizedCountryName = countryValidation.value;
 
-                const sanitizedCountryName = countryValidation.value;
-
                 // Run the simulation
                 runSimulation(latitude, longitude, sanitizedCountryName);
             },
@@ -519,6 +546,7 @@
         radiationSeries.data.clear();
         fireballSeries.data.clear();
         falloutSeries.data.clear();
+        windSeries.data.clear();
 
         isCalculating = true;
 
@@ -567,6 +595,14 @@
 
         const centroid = [longitude, latitude];
         const pointGeometry = { type: "Point", coordinates: centroid };
+
+        // Add wind indicator (arrow pointing to fallout)
+        windSeries.data.push({
+            geometry: pointGeometry,
+            graphicSettings: {
+                rotation: wind.direction - 90, // Adjustment for SVG path orientation
+            },
+        });
 
         // Push data to series - this triggers animations automatically
         thermalSeries.data.push({
@@ -683,6 +719,35 @@
                 lastSimLocation.name,
             );
         }
+    }
+
+    /**
+     * Seek simulation progress (0-100)
+     */
+    export function seekSimulation(progress: number) {
+        if (!thermalSeries) return;
+
+        // Simplified logic to show/hide series based on progress milestones
+        // Matching milestones in PlaybackControl.svelte
+
+        // Detonation (progress > 5)
+        fireballSeries.set("visible", progress > 5);
+        radiationSeries.set("visible", progress > 5);
+
+        // Shockwaves (progress > 30)
+        heavyBlastSeries.set("visible", progress > 30);
+        moderateBlastSeries.set("visible", progress > 30);
+        lightBlastSeries.set("visible", progress > 30);
+
+        // Thermal (progress > 70)
+        thermalSeries.set("visible", progress > 70);
+
+        // Fallout (progress > 90)
+        falloutSeries.set("visible", progress > 90);
+        windSeries.set("visible", progress > 90);
+
+        // Optional: scale circles based on fine-grained progress for smoother effect
+        // But for now, simple milestones are enough as per plan
     }
 
     /**
